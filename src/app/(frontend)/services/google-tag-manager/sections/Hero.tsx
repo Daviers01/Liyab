@@ -14,7 +14,7 @@ const Hero = () => {
       </p>
       
       <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-        Comprehensive GTM services to elevate your business's online performance. From expert setup and custom tracking to thorough audits and consulting, we optimize your data collection to deliver actionable insights that power your digital strategy.
+        Comprehensive GTM services to elevate your business&apos;s online performance. From expert setup and custom tracking to thorough audits and consulting, we optimize your data collection to deliver actionable insights that power your digital strategy.
       </p>
 
       <div className="flex flex-wrap gap-4 justify-center pt-6">

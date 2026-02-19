@@ -4,14 +4,14 @@ const Contact = () => {
       {/* Header */}
       <div className="text-center space-y-4">
         <h2 className="text-4xl md:text-5xl font-bold">
-          <span className="text-foreground">Let's Work </span>
+          <span className="text-foreground">Let&apos;s Work </span>
           <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
             Together
           </span>
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          I'm currently open for website-related gigs and exciting projects. 
-          Drop me a message and let's create something amazing!
+          I&apos;m currently open for website-related gigs and exciting projects. 
+          Drop me a message and let&apos;s create something amazing!
         </p>
       </div>
 

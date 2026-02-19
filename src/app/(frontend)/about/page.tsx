@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-const Home: NextPage = (props) => {
+const Home: NextPage = (_props) => {
   return (
     <div className="relative">
       {/* Gradient Orbs Background */}

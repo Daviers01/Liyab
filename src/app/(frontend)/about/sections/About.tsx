@@ -9,7 +9,7 @@ const About = () => {
             <h3 className="text-2xl font-bold mb-4 text-foreground">Professional</h3>
             <div className="space-y-5 text-muted-foreground">
               <p>
-                I'm a full stack developer with almost 9 years of professional
+                I&apos;m a full stack developer with almost 9 years of professional
                 experience. I specialize in building web applications and implementing web analytics.
               </p>
               <p>
@@ -20,9 +20,9 @@ const About = () => {
                 <span className="text-yellow-600 dark:text-yellow-400 font-bold">PayloadCMS</span>.
               </p>
               <p>
-                I'm currently working at{" "}
+                I&apos;m currently working at{" "}
                 <span className="text-orange-700 dark:text-orange-400 font-bold">Dentsu</span> as
-                Analytics Implementation Consultant. I'm also the founder of{" "}
+                Analytics Implementation Consultant. I&apos;m also the founder of{" "}
                 <a 
                   href="https://www.facebook.com/liyabdigitalph" 
                   className="text-amber-600 dark:text-amber-400 hover:underline font-bold transition-colors"
@@ -47,7 +47,7 @@ const About = () => {
                 technologies.
               </p>
               <p>
-                When I'm not debugging, I'm playing with my kids{" "}
+                When I&apos;m not debugging, I&apos;m playing with my kids{" "}
                 <span className="font-bold text-foreground">Eliana</span> and{" "}
                 <span className="font-bold text-foreground">Eliam</span>, dating my wife{" "}
                 <span className="font-bold text-foreground">Elizabeth</span>, or grinding ranked on Wild Rift. 🎮💘

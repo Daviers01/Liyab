@@ -45,7 +45,7 @@ const Banner = () => {
         </div>
         
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-          <span className="text-foreground">Hey, I'm </span>
+          <span className="text-foreground">Hey, I&apos;m </span>
           <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
             Chan Laurente
           </span>
@@ -62,7 +62,7 @@ const Banner = () => {
             href="#contact" 
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
           >
-            Let's Connect
+            Let&apos;s Connect
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>

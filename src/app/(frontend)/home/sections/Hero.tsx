@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 const Hero = () => {
   return (
     <div className="text-center space-y-6">
@@ -18,12 +20,12 @@ const Hero = () => {
         >
           View Portfolio
         </a>
-        <a
+        <Link
           href="/posts"
           className="inline-flex items-center gap-2 px-6 py-3 border-2 border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-600/10 font-semibold rounded-lg transition-colors duration-200"
         >
           Read Our Blog
-        </a>
+        </Link>
       </div>
     </div>
   );

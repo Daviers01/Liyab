@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { cn } from '@/utilities/ui';
 
 interface ExperienceCardProps {
@@ -15,12 +14,12 @@ interface ExperienceCardProps {
 
 export const ExperienceCard = ({ 
   name, 
-  image, 
+  image: _image, 
   role, 
   date, 
   subsidiary,
-  className,
-  isLast = false
+  className: _className,
+  isLast: _isLast = false
 }: ExperienceCardProps) => {
   // Extract year from date string (assuming format like "July 2024 - Present" or "September 2021 - June 2024")
   const getYear = (dateString: string) => {
