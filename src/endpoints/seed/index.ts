@@ -1,4 +1,5 @@
 import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
+import crypto from 'crypto'
 
 import { contactForm as contactFormData } from './contact-form'
 import { contact as contactPageData } from './contact-page'
@@ -71,6 +72,8 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding demo author and user...`)
 
+  const password = process.env.PAYLOAD_SEED_PASSWORD || crypto.randomBytes(32).toString('hex')
+
   await payload.delete({
     collection: 'users',
     depth: 0,
@@ -104,7 +107,7 @@ export const seed = async ({
       data: {
         name: 'Demo Author',
         email: 'demo-author@example.com',
-        password: 'password',
+        password,
       },
     }),
     payload.create({
@@ -275,6 +278,7 @@ export const seed = async ({
   ])
 
   payload.logger.info('Seeded database successfully!')
+  payload.logger.info(`— Demo Author Password: ${password}`)
 }
 
 async function fetchFileByURL(url: string): Promise<File> {
