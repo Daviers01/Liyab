@@ -127,7 +127,7 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
-    categories.map((category) =>
+    ...categories.map((category) =>
       payload.create({
         collection: 'categories',
         data: {
