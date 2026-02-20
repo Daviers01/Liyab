@@ -1,1 +1,1 @@
-export const SITE_NAME = 'Chanfolio'
+export const SITE_NAME = 'Liyab Digital'
