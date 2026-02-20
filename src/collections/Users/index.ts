@@ -1,15 +1,16 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../../access/authenticated'
+import { admins } from '../../access/admins'
+import { adminsOrSelf } from '../../access/adminsOrSelf'
 
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
-    admin: authenticated,
-    create: authenticated,
-    delete: authenticated,
-    read: authenticated,
-    update: authenticated,
+    admin: admins,
+    create: admins,
+    delete: admins,
+    read: adminsOrSelf,
+    update: adminsOrSelf,
   },
   admin: {
     defaultColumns: ['name', 'email'],
@@ -20,6 +21,27 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
+    },
+    {
+      name: 'roles',
+      type: 'select',
+      hasMany: true,
+      defaultValue: ['user'],
+      options: [
+        {
+          label: 'Admin',
+          value: 'admin',
+        },
+        {
+          label: 'User',
+          value: 'user',
+        },
+      ],
+      required: true,
+      saveToJWT: true,
+      access: {
+        update: admins,
+      },
     },
   ],
   timestamps: true,
