@@ -203,7 +203,7 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding pages...`)
 
-  const [_, contactPage] = await Promise.all([
+  const [_, _contactPage] = await Promise.all([
     payload.create({
       collection: 'pages',
       depth: 0,
@@ -226,18 +226,29 @@ export const seed = async ({
           {
             link: {
               type: 'custom',
-              label: 'Posts',
-              url: '/posts',
+              label: 'The Blueprint',
+              url: '/#how-we-help',
             },
           },
           {
             link: {
-              type: 'reference',
-              label: 'Contact',
-              reference: {
-                relationTo: 'pages',
-                value: contactPage.id,
-              },
+              type: 'custom',
+              label: 'The Lab',
+              url: '/#lab',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'The Toolkit',
+              url: '/#lab',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'The Journal',
+              url: '/posts',
             },
           },
         ],

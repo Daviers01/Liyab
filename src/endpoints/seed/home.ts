@@ -9,31 +9,14 @@ type HomeArgs = {
 
 export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> = ({
   heroImage,
-  metaImage,
+  metaImage: _metaImage,
 }) => {
   return {
     slug: 'home',
     _status: 'published',
     hero: {
       type: 'highImpact',
-      links: [
-        {
-          link: {
-            type: 'custom',
-            appearance: 'default',
-            label: 'All posts',
-            url: '/posts',
-          },
-        },
-        {
-          link: {
-            type: 'custom',
-            appearance: 'outline',
-            label: 'Contact',
-            url: '/contact',
-          },
-        },
-      ],
+      links: [], // Remove "Buy Now" button
       media: heroImage.id,
       richText: {
         root: {
@@ -48,7 +31,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                   format: 0,
                   mode: 'normal',
                   style: '',
-                  text: SITE_NAME,
+                  text: 'Lighting the Path Between Code and Conversions.',
                   version: 1,
                 },
               ],
@@ -62,67 +45,12 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
               type: 'paragraph',
               children: [
                 {
-                  type: 'link',
-                  children: [
-                    {
-                      type: 'text',
-                      detail: 0,
-                      format: 0,
-                      mode: 'normal',
-                      style: '',
-                      text: 'Visit the admin dashboard',
-                      version: 1,
-                    },
-                  ],
-                  direction: 'ltr',
-                  fields: {
-                    linkType: 'custom',
-                    newTab: false,
-                    url: '/admin',
-                  },
-                  format: '',
-                  indent: 0,
-                  version: 3,
-                },
-                {
                   type: 'text',
                   detail: 0,
                   format: 0,
                   mode: 'normal',
                   style: '',
-                  text: " to begin managing this site's content. The code for this template is completely open-source and can be found ",
-                  version: 1,
-                },
-                {
-                  type: 'link',
-                  children: [
-                    {
-                      type: 'text',
-                      detail: 0,
-                      format: 0,
-                      mode: 'normal',
-                      style: '',
-                      text: 'on our Github',
-                      version: 1,
-                    },
-                  ],
-                  direction: 'ltr',
-                  fields: {
-                    linkType: 'custom',
-                    newTab: true,
-                    url: 'https://github.com/payloadcms/payload/tree/main/templates/website',
-                  },
-                  format: '',
-                  indent: 0,
-                  version: 3,
-                },
-                {
-                  type: 'text',
-                  detail: 0,
-                  format: 0,
-                  mode: 'normal',
-                  style: '',
-                  text: '. ',
+                  text: 'Most marketing breaks because the technical foundation is shaky. Liyab Digital specializes in the heavy lifting—GTM architecture, GA4 precision, and custom web development—so your data tells the truth.',
                   version: 1,
                 },
               ],
@@ -142,10 +70,11 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
     },
     layout: [
       {
-        blockName: 'Content Block',
+        blockName: 'Defining the Role',
         blockType: 'content',
         columns: [
           {
+            size: 'full',
             richText: {
               root: {
                 type: 'root',
@@ -159,7 +88,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: 'Core features',
+                        text: 'The Gap I Bridge',
                         version: 1,
                       },
                     ],
@@ -176,10 +105,9 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'full',
           },
           {
-            enableLink: false,
+            size: 'oneThird',
             richText: {
               root: {
                 type: 'root',
@@ -193,7 +121,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: 'Admin Dashboard',
+                        text: 'The Marketer',
                         version: 1,
                       },
                     ],
@@ -212,39 +140,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: "Manage this site's pages and posts from the ",
-                        version: 1,
-                      },
-                      {
-                        type: 'link',
-                        children: [
-                          {
-                            type: 'text',
-                            detail: 0,
-                            format: 0,
-                            mode: 'normal',
-                            style: '',
-                            text: 'admin dashboard',
-                            version: 1,
-                          },
-                        ],
-                        direction: 'ltr',
-                        fields: {
-                          linkType: 'custom',
-                          newTab: false,
-                          url: '/admin',
-                        },
-                        format: '',
-                        indent: 0,
-                        version: 2,
-                      },
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: '.',
+                        text: 'Wants to know which ad worked.',
                         version: 1,
                       },
                     ],
@@ -261,10 +157,9 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
           },
           {
-            enableLink: false,
+            size: 'oneThird',
             richText: {
               root: {
                 type: 'root',
@@ -278,7 +173,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: 'Preview',
+                        text: 'The Developer',
                         version: 1,
                       },
                     ],
@@ -297,7 +192,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: 'Using versions, drafts, and preview, editors can review and share their changes before publishing them.',
+                        text: 'Wants the site to load fast and the code to stay clean.',
                         version: 1,
                       },
                     ],
@@ -314,10 +209,9 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
           },
           {
-            enableLink: false,
+            size: 'oneThird',
             richText: {
               root: {
                 type: 'root',
@@ -331,7 +225,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: 'Page Builder',
+                        text: 'The Technical Marketer',
                         version: 1,
                       },
                     ],
@@ -350,7 +244,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                         format: 0,
                         mode: 'normal',
                         style: '',
-                        text: 'Custom page builder allows you to create unique page, post, and project layouts for any type of content.',
+                        text: '(Liyab Digital) writes the custom scripts and configures the servers to make both happen without compromise.',
                         version: 1,
                       },
                     ],
@@ -367,208 +261,507 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
-          },
-          {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'SEO',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Editors have complete control over SEO data and site content directly from the ',
-                        version: 1,
-                      },
-                      {
-                        type: 'link',
-                        children: [
-                          {
-                            type: 'text',
-                            detail: 0,
-                            format: 0,
-                            mode: 'normal',
-                            style: '',
-                            text: 'admin dashboard',
-                            version: 1,
-                          },
-                        ],
-                        direction: 'ltr',
-                        fields: {
-                          linkType: 'custom',
-                          newTab: false,
-                          url: '/admin',
-                        },
-                        format: '',
-                        indent: 0,
-                        version: 2,
-                      },
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: '.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
-          },
-          {
-            enableLink: false,
-            richText: {
-              root: {
-                type: 'root',
-                children: [
-                  {
-                    type: 'heading',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Dark Mode',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    tag: 'h3',
-                    version: 1,
-                  },
-                  {
-                    type: 'paragraph',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'Users will experience this site in their preferred color scheme and each block can be inverted.',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    textFormat: 0,
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                version: 1,
-              },
-            },
-            size: 'oneThird',
           },
         ],
       },
       {
-        blockName: 'Media Block',
-        blockType: 'mediaBlock',
-        media: metaImage.id,
+        blockName: 'How We Help',
+        blockType: 'content',
+        columns: [
+          {
+            size: 'full',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'heading',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'Problems we solve',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    tag: 'h2',
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          // Row 1
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'heading',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'The Problem',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    tag: 'h4',
+                    version: 1,
+                  },
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: '"Our GA4 data looks wrong."',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'heading',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'How Liyab Digital Fixes It',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    tag: 'h4',
+                    version: 1,
+                  },
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'We perform deep-dive audits and data layer refactoring to ensure every event is tracked with 100% accuracy.',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          // Row 2
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: '"Third-party tags are slowing down my site."',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'We implement Server-Side GTM to move the processing load off the user\'s browser and onto the cloud.',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          // Row 3
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: '"We have data, but no insights."',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'We build custom pipelines connecting your website to BigQuery and AI tools for advanced prediction.',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          // Row 4
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: '"Tracking is breaking our privacy compliance."',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          {
+            size: 'half',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'We architect consent-mode-ready implementations that respect user privacy while preserving data.',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+        ],
       },
       {
-        blockName: 'Archive Block',
-        blockType: 'archive',
-        categories: [],
-        introContent: {
-          root: {
-            type: 'root',
-            children: [
-              {
-                type: 'heading',
+        blockName: 'Technical Proof',
+        blockType: 'content',
+        columns: [
+          {
+            size: 'full',
+            richText: {
+              root: {
+                type: 'root',
                 children: [
                   {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'Recent posts',
+                    type: 'heading',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'From the Lab',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    tag: 'h2',
+                    version: 1,
+                  },
+                  {
+                    type: 'heading',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'Mini-Case Study: How we reduced a client\'s tag-related latency by 40%.',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    tag: 'h3',
+                    version: 1,
+                  },
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'Our Tech Stack: GTM, GA4, BigQuery, JavaScript, Python.',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'Check out my free GTM Data Layer Generator (or view our technical blog post).',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
                     version: 1,
                   },
                 ],
                 direction: 'ltr',
                 format: '',
                 indent: 0,
-                tag: 'h3',
                 version: 1,
               },
-              {
-                type: 'paragraph',
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'The posts below are displayed in an "Archive" layout building block which is an extremely powerful way to display documents on a page. It can be auto-populated by collection or by category, or posts can be individually selected. Pagination controls will automatically appear if the number of results exceeds the number of items per page.',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                textFormat: 0,
-                version: 1,
-              },
-            ],
-            direction: 'ltr',
-            format: '',
-            indent: 0,
-            version: 1,
+            },
           },
-        },
-        populateBy: 'collection',
-        relationTo: 'posts',
+        ],
+      },
+      {
+        blockName: 'The Philosophy',
+        blockType: 'content',
+        columns: [
+          {
+            size: 'full',
+            richText: {
+              root: {
+                type: 'root',
+                children: [
+                  {
+                    type: 'heading',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'Why Liyab?',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    tag: 'h2',
+                    version: 1,
+                  },
+                  {
+                    type: 'paragraph',
+                    children: [
+                      {
+                        type: 'text',
+                        detail: 0,
+                        format: 0,
+                        mode: 'normal',
+                        style: '',
+                        text: 'Liyab means "to blaze" or "to ignite." In the world of digital marketing, data is often a dark, confusing place. We provide the spark that illuminates your performance, turning "guessing" into "knowing."',
+                        version: 1,
+                      },
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    textFormat: 0,
+                    version: 1,
+                  },
+                ],
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+        ],
       },
       {
         blockName: 'CTA',
@@ -578,8 +771,16 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
             link: {
               type: 'custom',
               appearance: 'default',
-              label: 'All posts',
-              url: '/posts',
+              label: 'Start a Conversation',
+              url: '/contact',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              appearance: 'outline',
+              label: 'Download my Technical Marketing Checklist for Developers',
+              url: '#', // Placeholder or real URL if user provides it
             },
           },
         ],
@@ -596,7 +797,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                     format: 0,
                     mode: 'normal',
                     style: '',
-                    text: 'This is a call to action',
+                    text: 'Have a technical hurdle you can\'t clear? Let\'s look at the code together.',
                     version: 1,
                   },
                 ],
@@ -604,57 +805,6 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 tag: 'h3',
-                version: 1,
-              },
-              {
-                type: 'paragraph',
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'This is a custom layout building block ',
-                    version: 1,
-                  },
-                  {
-                    type: 'link',
-                    children: [
-                      {
-                        type: 'text',
-                        detail: 0,
-                        format: 0,
-                        mode: 'normal',
-                        style: '',
-                        text: 'configured in the admin dashboard',
-                        version: 1,
-                      },
-                    ],
-                    direction: 'ltr',
-                    fields: {
-                      linkType: 'custom',
-                      newTab: false,
-                      url: '/admin',
-                    },
-                    format: '',
-                    indent: 0,
-                    version: 2,
-                  },
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: '.',
-                    version: 1,
-                  },
-                ],
-                direction: 'ltr',
-                format: '',
-                indent: 0,
-                textFormat: 0,
                 version: 1,
               },
             ],
@@ -667,7 +817,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
       },
     ],
     meta: {
-      description: 'An open-source website built with Payload and Next.js.',
+      description: 'Lighting the Path Between Code and Conversions.',
       image: heroImage.id,
       title: SITE_NAME,
     },

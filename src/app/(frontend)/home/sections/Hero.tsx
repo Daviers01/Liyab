@@ -1,50 +1,31 @@
-import Link from 'next/link';
+import React from 'react';
 
 const Hero = () => {
   return (
     <div className="text-center space-y-8">
       <div className="space-y-4">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-          <span className="block text-foreground mb-2">Liyab Digital</span>
-          <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-            Data Collection Experts
-          </span>
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground">
+          Lighting the Path Between Code and Conversions.
         </h1>
-        <h2 className="text-2xl md:text-3xl font-medium text-muted-foreground max-w-4xl mx-auto">
-          Turn User Interactions into <span className="text-orange-600 dark:text-orange-400 font-semibold">Actionable Data</span>
+        <h2 className="text-xl md:text-2xl font-medium text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+          Most marketing breaks because the technical foundation is shaky. Liyab Digital specializes in the heavy lifting—GTM architecture, GA4 precision, and custom web development—so your data tells the truth.
         </h2>
       </div>
 
-      <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-        We specialize in advanced tracking implementations, server-side tagging, and privacy-compliant data strategies.
-        Stop guessing and start making decisions based on accurate, reliable data.
-      </p>
-
-      <div className="flex flex-wrap gap-4 justify-center pt-8">
-        <a
-          href="#cta"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:shadow-lg hover:scale-105 text-white font-bold rounded-lg transition-all duration-300"
-        >
-          Start Collecting Better Data
-        </a>
-        <a
-          href="#expertise"
-          className="inline-flex items-center gap-2 px-8 py-4 border border-orange-500/30 text-orange-600 dark:text-orange-400 hover:bg-orange-500/5 font-semibold rounded-lg transition-all duration-300"
-        >
-          View Our Services
-        </a>
-      </div>
-
-      {/* Trust indicators / micro-copy for CRO */}
-      <div className="pt-8 flex justify-center items-center gap-8 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <span className="text-green-500">✓</span> GA4 & GTM Certified
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-green-500">✓</span> Privacy First
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-green-500">✓</span> Server-Side Tracking
+      {/* Visual Placeholder: A clean, high-tech diagram showing data flowing from a website into a structured cloud environment. */}
+      <div className="relative w-full h-64 md:h-96 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+        <div className="text-center p-4">
+          <p className="text-sm text-muted-foreground mb-2">[Diagram Placeholder]</p>
+          <div className="flex items-center justify-center gap-4 text-xs md:text-sm font-mono text-muted-foreground">
+            <span>Website</span>
+            <span>→</span>
+            <span>Data Layer</span>
+            <span>→</span>
+            <span>GTM</span>
+            <span>→</span>
+            <span>Cloud (BigQuery/GA4)</span>
+          </div>
         </div>
       </div>
     </div>
