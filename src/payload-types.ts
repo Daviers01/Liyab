@@ -72,6 +72,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    'audit-reports': AuditReport;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +95,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'audit-reports': AuditReportsSelect<false> | AuditReportsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -417,7 +419,15 @@ export interface Category {
 export interface User {
   id: number;
   name?: string | null;
+  organizationName?: string | null;
+  jobTitle?: string | null;
+  deactivated?: boolean | null;
   roles?: ('admin' | 'user')[] | null;
+  authProvider?: ('credentials' | 'google') | null;
+  googleSub?: string | null;
+  avatarUrl?: string | null;
+  googleAccessToken?: string | null;
+  googleRefreshToken?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -781,6 +791,37 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-reports".
+ */
+export interface AuditReport {
+  id: number;
+  user: number | User;
+  propertyName: string;
+  propertyId: string;
+  healthScore: number;
+  checks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  summary:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -988,6 +1029,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'audit-reports';
+        value: number | AuditReport;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1337,7 +1382,15 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  organizationName?: T;
+  jobTitle?: T;
+  deactivated?: T;
   roles?: T;
+  authProvider?: T;
+  googleSub?: T;
+  avatarUrl?: T;
+  googleAccessToken?: T;
+  googleRefreshToken?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1354,6 +1407,20 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-reports_select".
+ */
+export interface AuditReportsSelect<T extends boolean = true> {
+  user?: T;
+  propertyName?: T;
+  propertyId?: T;
+  healthScore?: T;
+  checks?: T;
+  summary?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect, createContext, useContext } from 'react'
 
@@ -163,26 +164,31 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Brand */}
-      <div className={`border-b border-border flex items-center ${collapsed ? 'justify-center p-3.5' : 'p-4'}`}>
+      <div className={`border-b border-border ${collapsed ? 'flex items-center justify-center p-3.5' : 'p-4'}`}>
         <Link
           href="/app"
-          className={`flex items-center ${collapsed ? '' : 'gap-2.5'}`}
+          className={`block ${collapsed ? '' : 'space-y-2'}`}
           onClick={() => setMobileOpen(false)}
         >
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-600/20 shrink-0">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
-              <path
-                fillRule="evenodd"
-                d="M4.25 2A2.25 2.25 0 002 4.25v2.5A2.25 2.25 0 004.25 9h2.5A2.25 2.25 0 009 6.75v-2.5A2.25 2.25 0 006.75 2h-2.5zm0 9A2.25 2.25 0 002 13.25v2.5A2.25 2.25 0 004.25 18h2.5A2.25 2.25 0 009 15.75v-2.5A2.25 2.25 0 006.75 11h-2.5zm9-9A2.25 2.25 0 0011 4.25v2.5A2.25 2.25 0 0013.25 9h2.5A2.25 2.25 0 0018 6.75v-2.5A2.25 2.25 0 0015.75 2h-2.5zm0 9A2.25 2.25 0 0011 13.25v2.5A2.25 2.25 0 0013.25 18h2.5A2.25 2.25 0 0018 15.75v-2.5A2.25 2.25 0 0015.75 11h-2.5z"
-                clipRule="evenodd"
+          {collapsed ? (
+            <Image
+              src="/logo-liyab-icon.png"
+              alt="Liyab"
+              width={36}
+              height={36}
+              className="w-9 h-9 object-contain"
+            />
+          ) : (
+            <>
+              <Image
+                src="/logo-liyab.png"
+                alt="Liyab"
+                width={200}
+                height={50}
+                className="w-full h-auto object-contain"
               />
-            </svg>
-          </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-foreground leading-none truncate">Liyab Tools</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5 truncate">Analytics Toolkit</p>
-            </div>
+              <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground text-center">Analytics Toolkit</p>
+            </>
           )}
         </Link>
       </div>
@@ -397,7 +403,7 @@ function TopBar({
   }
 
   return (
-    <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm flex items-center justify-between px-4 shrink-0">
+    <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm flex items-center justify-between px-4 shrink-0 relative z-30">
       {/* Left: mobile hamburger + breadcrumbs */}
       <div className="flex items-center gap-2 min-w-0">
         <button
@@ -477,6 +483,17 @@ function TopBar({
                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
               <div className="p-1.5">
+                <Link
+                  href="/app/profile"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted/50 transition-colors"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                    <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                  </svg>
+                  Profile Settings
+                </Link>
+                <div className="h-px bg-border my-1" />
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"

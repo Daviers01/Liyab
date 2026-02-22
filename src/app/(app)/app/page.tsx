@@ -34,10 +34,43 @@ const tools: Tool[] = [
 // ─── Stat cards ──────────────────────────────────────────────────────────────
 
 const stats = [
-  { label: 'Available Tools', value: '1', icon: '🛠️' },
-  { label: 'Free Tools', value: '1', icon: '✅' },
-  { label: 'Categories', value: '1', icon: '📂' },
-  { label: 'Coming Soon', value: '0', icon: '🚀' },
+  {
+    label: 'Available Tools',
+    value: '1',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-orange-500">
+        <path fillRule="evenodd" d="M14.5 10a4.5 4.5 0 004.284-5.882c-.105-.324-.51-.391-.752-.15L15.34 6.66a.454.454 0 01-.493.11 3.01 3.01 0 01-1.618-1.616.455.455 0 01.11-.494l2.694-2.692c.24-.241.174-.647-.15-.752a4.5 4.5 0 00-5.873 4.575c.055.873-.128 1.808-.8 2.368l-7.23 6.024a2.724 2.724 0 103.837 3.837l6.024-7.23c.56-.672 1.495-.855 2.368-.8.096.007.193.01.291.01zM5 16a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Free Tools',
+    value: '1',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-emerald-500">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Categories',
+    value: '1',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-blue-500">
+        <path d="M3.505 2.365A41.369 41.369 0 019 2c1.863 0 3.697.124 5.495.365 1.247.167 2.18 1.108 2.435 2.268a4.45 4.45 0 00-.577-.069 43.141 43.141 0 00-4.706 0C9.229 4.696 7.5 6.727 7.5 8.998v2.24c0 1.413.67 2.735 1.76 3.562l-2.98 2.98A.75.75 0 015 17.25v-3.443c-.501-.048-1-.106-1.495-.172C2.033 13.438 1 12.162 1 10.72V5.28c0-1.441 1.033-2.717 2.505-2.914z" />
+        <path d="M14 6c-.762 0-1.52.02-2.271.062C10.157 6.148 9 7.472 9 8.998v2.24c0 1.519 1.147 2.839 2.71 2.935.214.013.428.024.642.034.2.009.385.09.518.224l2.35 2.35a.75.75 0 001.28-.531v-2.07c1.453-.195 2.5-1.463 2.5-2.942V8.998c0-1.526-1.157-2.85-2.729-2.936A41.645 41.645 0 0014 6z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Coming Soon',
+    value: '0',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-amber-500">
+        <path fillRule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
 ]
 
 // ─── Status badge ────────────────────────────────────────────────────────────
@@ -91,7 +124,7 @@ export default function AppDashboard() {
               className="p-3.5 rounded-xl border border-border bg-card/60 backdrop-blur-sm"
             >
               <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-sm">{stat.icon}</span>
+                <span>{stat.icon}</span>
                 <span className="text-[11px] text-muted-foreground font-medium">{stat.label}</span>
               </div>
               <p className="text-xl font-bold text-foreground">{stat.value}</p>
