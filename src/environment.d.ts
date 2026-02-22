@@ -5,6 +5,8 @@ declare global {
       DATABASE_URL: string
       NEXT_PUBLIC_SERVER_URL: string
       VERCEL_PROJECT_PRODUCTION_URL: string
+      GOOGLE_CLIENT_ID: string
+      GOOGLE_CLIENT_SECRET: string
     }
   }
 }
