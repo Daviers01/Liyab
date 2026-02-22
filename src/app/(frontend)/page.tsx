@@ -2,9 +2,9 @@ import type { Metadata, NextPage } from "next";
 import { Hero, Expertise, Portfolio, LatestPosts, CallToAction } from "./home/sections";
 
 export const metadata: Metadata = {
-  title: "Liyab Digital - Web Development & Analytics Tagging Experts",
-  description: "Expert web development and analytics team. Building modern web applications with React, Next.js, and implementing precise tracking solutions with GA4, GTM, and Tealium.",
-  keywords: ["web development", "analytics tagging", "google analytics", "google tag manager", "react developer", "nextjs", "tracking implementation", "gtm specialist", "ga4", "tealium"],
+  title: "Liyab Digital - Technical Marketing Engineering",
+  description: "Liyab Digital bridges code and conversions with GTM architecture, GA4 precision, server-side tagging, and data pipelines built for truth and performance.",
+  keywords: ["technical marketer", "gtm architecture", "ga4 implementation", "server-side gtm", "bigquery analytics", "data layer", "technical marketing", "tracking audit", "privacy compliance"],
   authors: [{ name: "Chan Laurente" }],
   creator: "Chan Laurente",
   publisher: "Liyab Digital",
@@ -12,14 +12,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://yourdomain.com",
-    title: "Liyab Digital - Web Development & Analytics Tagging",
-    description: "Expert web development and analytics team specializing in React, Next.js, GA4, and GTM implementations.",
+    title: "Liyab Digital - Technical Marketing Engineering",
+    description: "Technical implementation partner for reliable analytics, performance-safe tagging, and cloud-ready data pipelines.",
     siteName: "Liyab Digital",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Liyab Digital - Web Development & Analytics Tagging",
-    description: "Expert web development and analytics team specializing in React, Next.js, GA4, and GTM implementations.",
+    title: "Liyab Digital - Technical Marketing Engineering",
+    description: "Bridge marketing and engineering with GTM, GA4, BigQuery, and custom technical implementations.",
   },
   robots: {
     index: true,
@@ -57,14 +57,14 @@ const HomePage: NextPage = () => {
       </div>
 
       {/* Expertise Section */}
-      <section id="expertise" className="relative py-24">
+      <section id="blueprint" className="relative py-24 scroll-mt-28">
         <div className="container">
           <Expertise />
         </div>
       </section>
 
       {/* Portfolio Section - Highlighted */}
-      <section id="portfolio" className="relative py-24 bg-gradient-to-b from-background via-card/50 to-background">
+      <section id="toolkit" className="relative py-24 bg-gradient-to-b from-background via-card/50 to-background scroll-mt-28">
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
         <div className="container relative">
           <Portfolio />
@@ -77,7 +77,7 @@ const HomePage: NextPage = () => {
       </div>
 
       {/* Latest Posts Section */}
-      <section id="blog" className="relative py-24">
+      <section id="lab" className="relative py-24 scroll-mt-28">
         <div className="container">
           <LatestPosts />
         </div>
@@ -89,7 +89,7 @@ const HomePage: NextPage = () => {
       </div>
 
       {/* Call to Action Section */}
-      <section id="cta" className="relative py-24">
+      <section id="cta" className="relative py-24 scroll-mt-28">
         <div className="container">
           <CallToAction />
         </div>

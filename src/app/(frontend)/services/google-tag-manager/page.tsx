@@ -1,5 +1,5 @@
 import type { Metadata, NextPage } from "next";
-import { Hero, Services, WhyChooseUs, CTA } from "./sections";
+import { Hero, Services, Process, WhyChooseUs, CTA } from "./sections";
 
 export const metadata: Metadata = {
   title: "Google Tag Manager Services | GTM Setup, Audits & Consulting",
@@ -45,8 +45,15 @@ const GTMServicesPage: NextPage = () => {
         </div>
       </section>
 
-      {/* Why Choose Us */}
+      {/* Process */}
       <section className="relative py-16 md:py-24 bg-gradient-to-b from-card/30 to-background">
+        <div className="container">
+          <Process />
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="relative py-16 md:py-24">
         <div className="container">
           <WhyChooseUs />
         </div>

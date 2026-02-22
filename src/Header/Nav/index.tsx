@@ -11,15 +11,10 @@ import { usePathname } from 'next/navigation'
 
 const staticNavItems = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { 
-    label: 'Services', 
-    href: '/services/google-tag-manager',
-    subItems: [
-      { label: 'Google Tag Manager', href: '/services/google-tag-manager' }
-    ]
-  },
-  { label: 'Blog', href: '/posts' },
+  { label: 'The Blueprint', href: '/#blueprint' },
+  { label: 'The Lab', href: '/#lab' },
+  { label: 'The Toolkit', href: '/#toolkit' },
+  { label: 'The Journal', href: '/posts' },
 ]
 
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {

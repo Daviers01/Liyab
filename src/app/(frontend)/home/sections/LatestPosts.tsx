@@ -1,77 +1,68 @@
 import Link from 'next/link';
 
-type PostCardProps = {
-  title: string;
-  excerpt: string;
-  slug: string;
-  date: string;
-};
-
-const PostCard = ({ title, excerpt, slug, date }: PostCardProps) => {
-  return (
-    <Link href={`/posts/${slug}`}>
-      <div className="group p-6 rounded-lg border border-border bg-card hover:border-orange-500/50 transition-all duration-300 h-full hover:shadow-lg hover:shadow-orange-500/10">
-        <div className="space-y-3">
-          <div className="text-sm text-muted-foreground">{date}</div>
-          <h3 className="text-xl font-bold text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-            {title}
-          </h3>
-          <p className="text-muted-foreground leading-relaxed line-clamp-3">
-            {excerpt}
-          </p>
-          <div className="text-orange-600 dark:text-orange-400 font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-            Read more →
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-};
-
 const LatestPosts = () => {
-  // This will be replaced with actual blog posts from your CMS
-  const posts = [
-    {
-      title: "Setting Up Google Analytics 4 with Next.js",
-      excerpt: "A comprehensive guide to implementing GA4 in your Next.js application with proper event tracking and custom dimensions.",
-      slug: "ga4-nextjs-setup",
-      date: "February 15, 2026"
-    },
-    {
-      title: "Advanced GTM Strategies for E-commerce Tracking",
-      excerpt: "Learn how to implement enhanced e-commerce tracking using Google Tag Manager with proper data layer architecture.",
-      slug: "gtm-ecommerce-tracking",
-      date: "February 10, 2026"
-    },
-    {
-      title: "Building Performant React Applications",
-      excerpt: "Best practices for optimizing React apps: code splitting, lazy loading, memoization, and performance monitoring.",
-      slug: "react-performance-optimization",
-      date: "February 5, 2026"
-    }
-  ];
+  const stack = ['GTM', 'GA4', 'BigQuery', 'JavaScript', 'Python'];
 
   return (
     <div className="space-y-12">
-      <div className="flex justify-between items-end">
-        <div className="space-y-4">
-          <h2 className="text-4xl font-bold text-foreground">Latest Posts</h2>
-          <p className="text-xl text-muted-foreground">
-            Insights and tutorials on web development and analytics
-          </p>
-        </div>
-        <Link 
-          href="/posts"
-          className="text-orange-600 dark:text-orange-400 font-semibold hover:underline"
-        >
-          View all posts →
-        </Link>
+      <div className="space-y-4 text-center">
+        <h2 className="text-4xl font-bold text-foreground">From the Lab</h2>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          Technical proof from real implementations, shared in a practical format teams can use.
+        </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post, index) => (
-          <PostCard key={index} {...post} />
-        ))}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <article className="lg:col-span-2 p-7 rounded-xl border border-border bg-card">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground mb-3">
+            Mini Case Study
+          </p>
+          <h3 className="text-2xl font-bold text-foreground mb-3">
+            How we reduced a client&apos;s tag-related latency by 40%
+          </h3>
+          <p className="text-muted-foreground leading-relaxed mb-5">
+            We audited legacy tags, moved execution to Server-Side GTM, and rebuilt the event model
+            with a strict data layer contract. Result: faster pages, cleaner analytics, and fewer
+            emergency fixes during campaign launches.
+          </p>
+          <Link href="/about#projects" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">
+            Explore technical outcomes →
+          </Link>
+        </article>
+
+        <aside className="space-y-6 p-7 rounded-xl border border-border bg-card">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground mb-3">
+              The Tech Stack
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {stack.map((item) => (
+                <span
+                  key={item}
+                  className="px-3 py-1 text-xs font-semibold rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-4 rounded-lg border border-orange-500/20 bg-orange-500/5">
+            <p className="text-sm font-semibold text-foreground mb-2">Helpful Tool</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              Build cleaner implementation plans before you deploy new events.
+            </p>
+            <Link href="/posts" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">
+              Check the GTM Data Layer Generator →
+            </Link>
+          </div>
+        </aside>
+      </div>
+
+      <div className="flex justify-end">
+        <Link href="/posts" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">
+          Visit The Journal →
+        </Link>
       </div>
     </div>
   );
