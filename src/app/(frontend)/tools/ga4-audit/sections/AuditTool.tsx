@@ -1,18 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Link from 'next/link'
 import { generateAuditPDF } from '@/app/(app)/app/tools/ga4-audit/generateAuditPDF'
-import { FireLoader } from '@/app/(app)/components/FireLoader'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type AuditStatus = 'idle' | 'connecting' | 'selecting' | 'auditing' | 'done' | 'error'
-
-interface GA4Property {
-  name: string
-  displayName: string
-  propertyId: string
-}
+type ViewState = 'landing' | 'report'
 
 interface AuditCheckResult {
   id: string
@@ -131,17 +125,13 @@ function HealthScoreRing({ score }: { score: number }) {
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function AuditTool() {
-  const [status, setStatus] = useState<AuditStatus>('idle')
-  const [properties, setProperties] = useState<GA4Property[]>([])
-  const [selectedProperty, setSelectedProperty] = useState<GA4Property | null>(null)
-  const [report, setReport] = useState<AuditReport | null>(null)
-  const [error, setError] = useState<string>('')
+  const [view, setView] = useState<ViewState>('landing')
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
-  const [showSample, setShowSample] = useState(false)
   const [exporting, setExporting] = useState(false)
 
+  const report = sampleReport
+
   const handleExportPDF = useCallback(async () => {
-    if (!report) return
     setExporting(true)
     try {
       await generateAuditPDF(report)
@@ -152,94 +142,8 @@ export default function AuditTool() {
     }
   }, [report])
 
-  // ── OAuth connect ────────────────────────────────────────────────────────
-  const handleConnect = async () => {
-    setStatus('connecting')
-    setError('')
-    try {
-      const res = await fetch('/api/ga4-audit/auth')
-      const data = await res.json()
-      if (data.url) {
-        // Open Google consent screen
-        const popup = window.open(data.url, 'ga4-auth', 'width=500,height=700')
-        // Listen for the callback
-        const handler = async (e: MessageEvent) => {
-          if (e.data?.type === 'ga4-auth-callback' && e.data.code) {
-            window.removeEventListener('message', handler)
-            popup?.close()
-            // Exchange code for token and list properties
-            const tokenRes = await fetch('/api/ga4-audit/callback', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ code: e.data.code }),
-            })
-            const tokenData = await tokenRes.json()
-            if (tokenData.properties?.length > 0) {
-              setProperties(tokenData.properties)
-              setStatus('selecting')
-            } else {
-              setError(
-                'No GA4 properties found. Make sure you have access to at least one GA4 property.',
-              )
-              setStatus('error')
-            }
-          }
-        }
-        window.addEventListener('message', handler)
-      }
-    } catch {
-      setError('Failed to connect. Please try again.')
-      setStatus('error')
-    }
-  }
-
-  // ── Run audit ────────────────────────────────────────────────────────────
-  const handleRunAudit = async (property: GA4Property) => {
-    setSelectedProperty(property)
-    setStatus('auditing')
-    setError('')
-    try {
-      const res = await fetch('/api/ga4-audit/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          propertyId: property.propertyId,
-          propertyName: property.displayName,
-        }),
-      })
-      const data = await res.json()
-      if (data.report) {
-        setReport(data.report)
-        setStatus('done')
-      } else {
-        setError(data.error || 'Audit failed. Please try again.')
-        setStatus('error')
-      }
-    } catch {
-      setError('Audit failed. Please try again.')
-      setStatus('error')
-    }
-  }
-
-  // ── Sample report ────────────────────────────────────────────────────────
-  const handleViewSample = () => {
-    setShowSample(true)
-    setReport(sampleReport)
-    setStatus('done')
-  }
-
-  const handleReset = () => {
-    setStatus('idle')
-    setProperties([])
-    setSelectedProperty(null)
-    setReport(null)
-    setError('')
-    setExpandedCategory(null)
-    setShowSample(false)
-  }
-
   // ── Group checks by category ────────────────────────────────────────────
-  const groupedChecks = report?.checks.reduce(
+  const groupedChecks = report.checks.reduce(
     (acc, check) => {
       if (!acc[check.category]) acc[check.category] = []
       acc[check.category].push(check)
@@ -258,7 +162,7 @@ export default function AuditTool() {
       </div>
 
       {/* ── Hero / Landing ─────────────────────────────────────────────── */}
-      {status === 'idle' && (
+      {view === 'landing' && (
         <>
           <section className="relative py-20 md:py-32">
             <div className="container max-w-5xl mx-auto text-center space-y-8">
@@ -274,17 +178,17 @@ export default function AuditTool() {
                 GA4 Health Score and get actionable fixes—no data stored, no privacy risk.
               </p>
               <div className="flex flex-wrap gap-4 justify-center pt-4">
-                <button
-                  onClick={handleConnect}
-                  className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl transition-colors duration-200 shadow-lg shadow-orange-600/20 cursor-pointer"
+                <Link
+                  href="/app/tools/ga4-audit"
+                  className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl transition-colors duration-200 shadow-lg shadow-orange-600/20"
                 >
                   <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                     <path d="M12.577 4.878a.75.75 0 01.919-.53l4.78 1.281a.75.75 0 01.531.919l-1.281 4.78a.75.75 0 01-1.449-.388l.81-3.022a19.407 19.407 0 00-5.594 5.203.75.75 0 01-1.139.093L7 10.06l-4.72 4.72a.75.75 0 01-1.06-1.06l5.25-5.25a.75.75 0 011.06 0l3.074 3.073a20.923 20.923 0 015.545-4.931l-3.042.815a.75.75 0 01-.53-.919z" />
                   </svg>
                   Get My GA4 Health Score
-                </button>
+                </Link>
                 <button
-                  onClick={handleViewSample}
+                  onClick={() => setView('report')}
                   className="inline-flex items-center gap-2 px-8 py-3.5 border border-border hover:border-orange-500/40 text-foreground hover:text-orange-600 dark:hover:text-orange-400 font-semibold rounded-xl transition-colors duration-200 cursor-pointer"
                 >
                   View Sample Audit
@@ -409,133 +313,15 @@ export default function AuditTool() {
         </>
       )}
 
-      {/* ── Connecting state ───────────────────────────────────────────── */}
-      {status === 'connecting' && (
-        <section className="py-32">
-          <div className="container max-w-lg mx-auto text-center space-y-6">
-            <FireLoader size={80} label="" />
-            <h2 className="text-2xl font-bold text-foreground">Connecting to Google...</h2>
-            <p className="text-muted-foreground">
-              Complete the sign-in in the popup window to continue.
-            </p>
-            <button
-              onClick={handleReset}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              Cancel
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* ── Property selection ─────────────────────────────────────────── */}
-      {status === 'selecting' && (
-        <section className="py-20 md:py-32">
-          <div className="container max-w-2xl mx-auto space-y-8">
-            <div className="text-center space-y-4">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">
-                Step 2 of 3
-              </p>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                Select a GA4 Property
-              </h2>
-              <p className="text-muted-foreground">Choose the property you&apos;d like to audit.</p>
-            </div>
-            <div className="space-y-3">
-              {properties.map((prop) => (
-                <button
-                  key={prop.name}
-                  onClick={() => handleRunAudit(prop)}
-                  className="w-full text-left p-5 rounded-2xl border border-border bg-card/80 backdrop-blur-sm hover:border-orange-500/40 transition-all duration-200 cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-                        {prop.displayName}
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-0.5">{prop.propertyId}</p>
-                    </div>
-                    <svg
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5 text-muted-foreground group-hover:text-orange-500 transition-colors"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </button>
-              ))}
-            </div>
-            <div className="text-center">
-              <button
-                onClick={handleReset}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                Start over
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── Auditing state ─────────────────────────────────────────────── */}
-      {status === 'auditing' && (
-        <section className="py-32">
-          <div className="container max-w-lg mx-auto text-center space-y-6">
-            <FireLoader size={80} label="" />
-            <h2 className="text-2xl font-bold text-foreground">Auditing Your GA4 Setup...</h2>
-            <p className="text-muted-foreground">
-              Analyzing{' '}
-              <span className="font-medium text-foreground">{selectedProperty?.displayName}</span>.
-              This usually takes under 30 seconds.
-            </p>
-            <div className="space-y-2 text-sm text-muted-foreground max-w-xs mx-auto">
-              <p className="animate-pulse">Checking event configuration...</p>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── Error state ────────────────────────────────────────────────── */}
-      {status === 'error' && (
-        <section className="py-32">
-          <div className="container max-w-lg mx-auto text-center space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8 text-red-500">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-foreground">Something Went Wrong</h2>
-            <p className="text-muted-foreground">{error}</p>
-            <button
-              onClick={handleReset}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl transition-colors cursor-pointer"
-            >
-              Try Again
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* ── Results ────────────────────────────────────────────────────── */}
-      {status === 'done' && report && (
+      {/* ── Sample Report ──────────────────────────────────────────────── */}
+      {view === 'report' && (
         <section className="py-16 md:py-24">
           <div className="container max-w-5xl mx-auto space-y-12">
             {/* Header */}
             <div className="text-center space-y-4">
-              {showSample && (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold mb-2">
-                  Sample Report
-                </div>
-              )}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold mb-2">
+                Sample Report
+              </div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">
                 Audit Complete
               </p>
@@ -591,70 +377,67 @@ export default function AuditTool() {
             </div>
 
             {/* Detailed checks by category */}
-            {groupedChecks &&
-              Object.entries(groupedChecks).map(([category, checks]) => {
-                const isExpanded = expandedCategory === category
-                const failCount = checks.filter((c) => c.status === 'fail').length
-                const warnCount = checks.filter((c) => c.status === 'warn').length
+            {Object.entries(groupedChecks).map(([category, checks]) => {
+              const isExpanded = expandedCategory === category
+              const failCount = checks.filter((c) => c.status === 'fail').length
+              const warnCount = checks.filter((c) => c.status === 'warn').length
 
-                return (
-                  <div
-                    key={category}
-                    className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden"
+              return (
+                <div
+                  key={category}
+                  className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden"
+                >
+                  <button
+                    onClick={() => setExpandedCategory(isExpanded ? null : category)}
+                    className="w-full flex items-center justify-between p-6 text-left hover:bg-muted/5 transition-colors cursor-pointer"
                   >
-                    <button
-                      onClick={() => setExpandedCategory(isExpanded ? null : category)}
-                      className="w-full flex items-center justify-between p-6 text-left hover:bg-muted/5 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-bold text-foreground">{category}</h3>
-                        <span className="text-xs text-muted-foreground">
-                          {checks.length} checks
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-bold text-foreground">{category}</h3>
+                      <span className="text-xs text-muted-foreground">{checks.length} checks</span>
+                      {failCount > 0 && (
+                        <span className="text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5">
+                          {failCount} failed
                         </span>
-                        {failCount > 0 && (
-                          <span className="text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5">
-                            {failCount} failed
-                          </span>
-                        )}
-                        {warnCount > 0 && (
-                          <span className="text-xs font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
-                            {warnCount} warnings
-                          </span>
-                        )}
-                      </div>
-                      <svg
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    {isExpanded && (
-                      <div className="border-t border-border divide-y divide-border">
-                        {checks.map((check) => (
-                          <div key={check.id} className="p-5 flex gap-4">
-                            <StatusIcon status={check.status} />
-                            <div className="space-y-1 min-w-0">
-                              <p className="font-semibold text-foreground text-sm">{check.name}</p>
-                              <p className="text-sm text-muted-foreground">{check.message}</p>
-                              {check.recommendation && (
-                                <p className="text-xs text-orange-600 dark:text-orange-400 mt-1.5">
-                                  <span className="font-semibold">Fix:</span> {check.recommendation}
-                                </p>
-                              )}
-                            </div>
+                      )}
+                      {warnCount > 0 && (
+                        <span className="text-xs font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
+                          {warnCount} warnings
+                        </span>
+                      )}
+                    </div>
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  {isExpanded && (
+                    <div className="border-t border-border divide-y divide-border">
+                      {checks.map((check) => (
+                        <div key={check.id} className="p-5 flex gap-4">
+                          <StatusIcon status={check.status} />
+                          <div className="space-y-1 min-w-0">
+                            <p className="font-semibold text-foreground text-sm">{check.name}</p>
+                            <p className="text-sm text-muted-foreground">{check.message}</p>
+                            {check.recommendation && (
+                              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1.5">
+                                <span className="font-semibold">Fix:</span> {check.recommendation}
+                              </p>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
 
             {/* Actions */}
             <div className="flex flex-wrap gap-4 justify-center pt-4">
@@ -693,22 +476,17 @@ export default function AuditTool() {
                   </>
                 )}
               </button>
-              {showSample && (
-                <button
-                  onClick={() => {
-                    handleReset()
-                    setTimeout(() => handleConnect(), 100)
-                  }}
-                  className="inline-flex items-center gap-2 px-8 py-3.5 border border-border hover:border-orange-500/40 text-foreground font-semibold rounded-xl transition-colors cursor-pointer"
-                >
-                  Audit My Own GA4
-                </button>
-              )}
+              <Link
+                href="/app/tools/ga4-audit"
+                className="inline-flex items-center gap-2 px-8 py-3.5 border border-border hover:border-orange-500/40 text-foreground font-semibold rounded-xl transition-colors"
+              >
+                Audit My Own GA4
+              </Link>
               <button
-                onClick={handleReset}
+                onClick={() => setView('landing')}
                 className="inline-flex items-center gap-2 px-8 py-3.5 border border-border hover:border-orange-500/40 text-foreground font-semibold rounded-xl transition-colors cursor-pointer"
               >
-                {showSample ? 'Back to Home' : 'Run Another Audit'}
+                Back to Home
               </button>
             </div>
           </div>
