@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
-import { generateAuditPDF } from './generateAuditPDF'
 import type { AuditCheckResult, AuditReport, SavedReportSummary } from '@/types/audit'
 import { FireLoader } from '@/app/(app)/components/FireLoader'
 
@@ -288,6 +287,7 @@ export default function GA4AuditApp() {
     if (!report) return
     setExporting(true)
     try {
+      const { generateAuditPDF } = await import('./generateAuditPDF')
       await generateAuditPDF(report)
     } catch (err) {
       console.error('PDF export failed:', err)
@@ -510,16 +510,18 @@ export default function GA4AuditApp() {
         {/* ── Ready State: Onboarding ─────────────────────────────────── */}
         {status === 'ready' && (
           <div className="px-6 md:px-8 py-8 max-w-7xl mx-auto space-y-6">
-
             {/* ── Top two-column layout ─────────────────────────────── */}
             <div className="grid md:grid-cols-[1fr_1.5fr] gap-6 items-start">
-
               {/* Left: Getting Started */}
               <div className="space-y-4">
                 <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-6 space-y-5">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-orange-500">
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-4 h-4 text-orange-500"
+                      >
                         <path
                           fillRule="evenodd"
                           d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
@@ -541,7 +543,7 @@ export default function GA4AuditApp() {
                       {
                         step: '1',
                         title: 'Connect your Google account',
-                        desc: "If you signed in with Google, your account is already linked. Otherwise a one-time OAuth popup will appear.",
+                        desc: 'If you signed in with Google, your account is already linked. Otherwise a one-time OAuth popup will appear.',
                       },
                       {
                         step: '2',
@@ -584,7 +586,9 @@ export default function GA4AuditApp() {
                       />
                     </svg>
                     <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/70 leading-relaxed">
-                      <span className="font-semibold text-emerald-700 dark:text-emerald-400">Read-only access.</span>{' '}
+                      <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                        Read-only access.
+                      </span>{' '}
                       We never store, copy, or share your analytics data.
                     </p>
                   </div>
@@ -603,7 +607,9 @@ export default function GA4AuditApp() {
 
                 {/* What We Check */}
                 <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-5 space-y-3">
-                  <h3 className="text-xs font-bold text-foreground uppercase tracking-wider text-muted-foreground">What We Check</h3>
+                  <h3 className="text-xs font-bold text-foreground uppercase tracking-wider text-muted-foreground">
+                    What We Check
+                  </h3>
                   <div className="grid grid-cols-2 gap-2">
                     {auditCategories.map((cat) => (
                       <div
@@ -613,7 +619,9 @@ export default function GA4AuditApp() {
                         <div className="w-6 h-6 rounded-md bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
                           {cat.icon}
                         </div>
-                        <p className="text-[11px] font-semibold text-foreground leading-tight">{cat.title}</p>
+                        <p className="text-[11px] font-semibold text-foreground leading-tight">
+                          {cat.title}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -664,7 +672,11 @@ export default function GA4AuditApp() {
                 ) : savedReports.length === 0 ? (
                   <div className="flex flex-col items-center justify-center p-10 gap-3 text-center">
                     <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-border flex items-center justify-center">
-                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6 text-muted-foreground/40">
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-6 h-6 text-muted-foreground/40"
+                      >
                         <path
                           fillRule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z"
@@ -716,7 +728,9 @@ export default function GA4AuditApp() {
                               <span className={`text-base font-bold leading-none ${scoreColor}`}>
                                 {r.healthScore}
                               </span>
-                              <span className="text-[9px] text-muted-foreground mt-0.5 leading-none">/100</span>
+                              <span className="text-[9px] text-muted-foreground mt-0.5 leading-none">
+                                /100
+                              </span>
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-semibold text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors truncate">
