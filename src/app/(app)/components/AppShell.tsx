@@ -70,7 +70,13 @@ const navigation: NavItem[] = [
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 
-export function AppShell({ children, user }: { children: React.ReactNode; user: { email: string; name?: string } }) {
+export function AppShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode
+  user: { email: string; name?: string }
+}) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -161,7 +167,9 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Brand */}
-      <div className={`border-b border-border ${collapsed ? 'flex items-center justify-center p-3.5' : 'p-4'}`}>
+      <div
+        className={`border-b border-border ${collapsed ? 'flex items-center justify-center p-3.5' : 'p-4'}`}
+      >
         <Link
           href="/app"
           className={`block ${collapsed ? '' : 'space-y-2'}`}
@@ -184,7 +192,9 @@ function SidebarContent({
                 height={50}
                 className="w-full h-auto object-contain"
               />
-              <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground text-center">Analytics Toolkit</p>
+              <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground text-center">
+                Analytics Toolkit
+              </p>
             </>
           )}
         </Link>
@@ -304,9 +314,7 @@ function SidebarContent({
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   }`}
                 >
-                  <span className={`shrink-0 ${active ? 'text-orange-500' : ''}`}>
-                    {item.icon}
-                  </span>
+                  <span className={`shrink-0 ${active ? 'text-orange-500' : ''}`}>{item.icon}</span>
                   <span className="truncate">{item.label}</span>
                 </Link>
               )}
@@ -379,10 +387,7 @@ function TopBar({
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   // Build breadcrumbs from pathname
-  const segments = pathname
-    .replace('/app', '')
-    .split('/')
-    .filter(Boolean)
+  const segments = pathname.replace('/app', '').split('/').filter(Boolean)
 
   const breadcrumbs = segments.map((seg, i) => ({
     label: seg
@@ -425,7 +430,11 @@ function TopBar({
           </Link>
           {breadcrumbs.map((b) => (
             <span key={b.href} className="flex items-center gap-1.5 min-w-0">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0"
+              >
                 <path
                   fillRule="evenodd"
                   d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
@@ -459,7 +468,11 @@ function TopBar({
           <span className="text-sm text-foreground font-medium hidden sm:block max-w-[120px] truncate">
             {user.name || user.email.split('@')[0]}
           </span>
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-muted-foreground hidden sm:block">
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-4 h-4 text-muted-foreground hidden sm:block"
+          >
             <path
               fillRule="evenodd"
               d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
