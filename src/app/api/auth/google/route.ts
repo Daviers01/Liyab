@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
 import config from '@payload-config'
 import crypto from 'crypto'
+import { createOAuth2Client, PAYLOAD_COOKIE_OPTIONS, setGA4Cookie } from '@/lib/google-client'
 
 /**
  * POST /api/auth/google
@@ -22,9 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Exchange code for Google tokens ──────────────────────────────────
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
+    const oauth2Client = createOAuth2Client(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/google/callback`,
     )
 
@@ -146,24 +145,11 @@ export async function POST(req: NextRequest) {
 
       // Set the Payload auth cookie
       if (result.token) {
-        response.cookies.set('payload-token', result.token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-        })
+        response.cookies.set('payload-token', result.token, PAYLOAD_COOKIE_OPTIONS)
       }
 
       // Also set the GA4 access token cookie for immediate audit use
-      if (tokens.access_token) {
-        response.cookies.set('ga4_access_token', tokens.access_token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 3600,
-          path: '/',
-        })
-      }
+      if (tokens.access_token) setGA4Cookie(response, tokens.access_token)
 
       return response
     }
@@ -179,23 +165,10 @@ export async function POST(req: NextRequest) {
     })
 
     if (loginResult.token) {
-      response.cookies.set('payload-token', loginResult.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-      })
+      response.cookies.set('payload-token', loginResult.token, PAYLOAD_COOKIE_OPTIONS)
     }
 
-    if (tokens.access_token) {
-      response.cookies.set('ga4_access_token', tokens.access_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 3600,
-        path: '/',
-      })
-    }
+    if (tokens.access_token) setGA4Cookie(response, tokens.access_token)
 
     return response
   } catch (err) {

@@ -2,6 +2,7 @@ import { google } from 'googleapis'
 import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
 import config from '@payload-config'
+import { createOAuth2Client, setGA4Cookie } from '@/lib/google-client'
 
 /**
  * POST /api/ga4-audit/connect
@@ -30,12 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Exchange code for Google tokens ──────────────────────────────────
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/google/callback`,
-    )
-
+    const oauth2Client = createOAuth2Client()
     const { tokens } = await oauth2Client.getToken(code)
     oauth2Client.setCredentials(tokens)
 
@@ -62,54 +58,32 @@ export async function POST(req: NextRequest) {
     })
 
     const accountsRes = await analyticsAdmin.accounts.list()
-    const accounts = accountsRes.data.accounts || []
+    const accounts = (accountsRes.data.accounts || []).filter((a) => a.name)
 
-    const properties: Array<{
-      name: string
-      displayName: string
-      propertyId: string
-    }> = []
+    // Fetch properties from all accounts in parallel
+    const results = await Promise.allSettled(
+      accounts.map((account) =>
+        analyticsAdmin.properties.list({ filter: `parent:${account.name}` }),
+      ),
+    )
 
-    for (const account of accounts) {
-      if (!account.name) continue
-      try {
-        const propsRes = await analyticsAdmin.properties.list({
-          filter: `parent:${account.name}`,
-        })
-        const props = propsRes.data.properties || []
-        for (const prop of props) {
-          if (prop.name && prop.displayName) {
-            properties.push({
-              name: prop.name,
-              displayName: prop.displayName,
-              propertyId: prop.name,
-            })
-          }
+    const properties: Array<{ name: string; displayName: string; propertyId: string }> = []
+    for (const result of results) {
+      if (result.status !== 'fulfilled') continue
+      for (const prop of result.value.data.properties || []) {
+        if (prop.name && prop.displayName) {
+          properties.push({ name: prop.name, displayName: prop.displayName, propertyId: prop.name })
         }
-      } catch {
-        continue
       }
     }
 
     // ── Set ga4_access_token cookie & return properties ──────────────────
     const response = NextResponse.json({ properties })
-
-    if (tokens.access_token) {
-      response.cookies.set('ga4_access_token', tokens.access_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 3600,
-        path: '/',
-      })
-    }
+    if (tokens.access_token) setGA4Cookie(response, tokens.access_token)
 
     return response
   } catch (err) {
     console.error('GA4 connect error:', err)
-    return NextResponse.json(
-      { error: 'Failed to connect Google account' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to connect Google account' }, { status: 500 })
   }
 }

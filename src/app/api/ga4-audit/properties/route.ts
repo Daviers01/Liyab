@@ -1,5 +1,6 @@
 import { google } from 'googleapis'
 import { NextRequest, NextResponse } from 'next/server'
+import { createOAuth2Client } from '@/lib/google-client'
 
 /**
  * GET /api/ga4-audit/properties
@@ -14,10 +15,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'no_token' }, { status: 401 })
     }
 
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-    )
+    const oauth2Client = createOAuth2Client()
     oauth2Client.setCredentials({ access_token: accessToken })
 
     const analyticsAdmin = google.analyticsadmin({
@@ -32,9 +30,7 @@ export async function GET(req: NextRequest) {
     const results = await Promise.allSettled(
       accounts
         .filter((a) => a.name)
-        .map((account) =>
-          analyticsAdmin.properties.list({ filter: `parent:${account.name}` }),
-        ),
+        .map((account) => analyticsAdmin.properties.list({ filter: `parent:${account.name}` })),
     )
 
     const properties: Array<{

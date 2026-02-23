@@ -1,30 +1,5 @@
 import jsPDF from 'jspdf'
-
-// ─── Types (mirrored from GA4AuditApp) ──────────────────────────────────────
-
-interface AuditCheckResult {
-  id: string
-  category: string
-  name: string
-  status: 'pass' | 'warn' | 'fail' | 'info'
-  message: string
-  recommendation?: string
-}
-
-interface AuditReport {
-  propertyName: string
-  propertyId: string
-  healthScore: number
-  timestamp: string
-  checks: AuditCheckResult[]
-  summary: {
-    total: number
-    passed: number
-    warnings: number
-    failures: number
-    info: number
-  }
-}
+import type { AuditCheckResult, AuditReport } from '@/types/audit'
 
 // ─── Config (update logoPath for whitelabels) ───────────────────────────────
 

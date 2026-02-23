@@ -1,6 +1,5 @@
-import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
-import config from '@payload-config'
+import { requireAuth } from '@/lib/api-auth'
 
 /**
  * GET /api/profile
@@ -8,12 +7,9 @@ import config from '@payload-config'
  */
 export async function GET(req: NextRequest) {
   try {
-    const payload = await getPayload({ config })
-    const { user } = await payload.auth({ headers: req.headers })
-
-    if (!user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
+    const auth = await requireAuth(req)
+    if ('error' in auth) return auth.error
+    const { user, payload } = auth
 
     // Fetch full user doc (overrideAccess to read all fields we need)
     const fullUser = await payload.findByID({
@@ -51,12 +47,9 @@ export async function GET(req: NextRequest) {
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const payload = await getPayload({ config })
-    const { user } = await payload.auth({ headers: req.headers })
-
-    if (!user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
+    const auth = await requireAuth(req)
+    if ('error' in auth) return auth.error
+    const { user, payload } = auth
 
     const body = await req.json()
     const { action } = body
@@ -145,12 +138,12 @@ export async function PATCH(req: NextRequest) {
       }
 
       case 'delete-audits': {
-        // For now, acknowledge the request. In the future, this would
-        // delete all audit records associated with this user.
-        return NextResponse.json({
-          success: true,
-          message: 'Audit deletion request received. All your audit data will be removed.',
+        await payload.delete({
+          collection: 'audit-reports',
+          where: { user: { equals: user.id } },
+          overrideAccess: true,
         })
+        return NextResponse.json({ success: true })
       }
 
       default:

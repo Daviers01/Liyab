@@ -1,5 +1,5 @@
-import { google } from 'googleapis'
 import { NextResponse } from 'next/server'
+import { createOAuth2Client } from '@/lib/google-client'
 
 /**
  * GET /api/auth/google/url
@@ -8,9 +8,7 @@ import { NextResponse } from 'next/server'
  * the GA4 audit tool works without a second login.
  */
 export async function GET() {
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
+  const oauth2Client = createOAuth2Client(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/google/callback`,
   )
 

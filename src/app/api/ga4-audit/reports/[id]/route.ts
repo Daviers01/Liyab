@@ -1,6 +1,5 @@
-import { getPayload } from 'payload'
-import config from '@payload-config'
 import { NextRequest } from 'next/server'
+import { requireAuth } from '@/lib/api-auth'
 
 // GET /api/ga4-audit/reports/[id] — get a specific saved audit report
 export async function GET(
@@ -8,17 +7,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const payload = await getPayload({ config })
-
-    const token = req.cookies.get('payload-token')?.value
-    if (!token) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { user } = await payload.auth({ headers: req.headers })
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const auth = await requireAuth(req)
+    if ('error' in auth) return auth.error
+    const { user, payload } = auth
 
     const { id } = await params
 
@@ -61,17 +52,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const payload = await getPayload({ config })
-
-    const token = req.cookies.get('payload-token')?.value
-    if (!token) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { user } = await payload.auth({ headers: req.headers })
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const auth = await requireAuth(req)
+    if ('error' in auth) return auth.error
+    const { user, payload } = auth
 
     const { id } = await params
 

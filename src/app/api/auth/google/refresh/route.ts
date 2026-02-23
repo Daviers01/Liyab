@@ -1,7 +1,6 @@
-import { google } from 'googleapis'
-import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
-import config from '@payload-config'
+import { createOAuth2Client, setGA4Cookie } from '@/lib/google-client'
+import { requireAuth } from '@/lib/api-auth'
 
 /**
  * POST /api/auth/google/refresh
@@ -11,20 +10,9 @@ import config from '@payload-config'
  */
 export async function POST(req: NextRequest) {
   try {
-    // Get the current Payload user
-    const payload = await getPayload({ config })
-
-    // Extract user from the payload-token cookie
-    const token = req.cookies.get('payload-token')?.value
-    if (!token) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
-
-    // Verify the JWT and get the user
-    const { user } = await payload.auth({ headers: req.headers })
-    if (!user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
+    const auth = await requireAuth(req)
+    if ('error' in auth) return auth.error
+    const { user, payload } = auth
 
     // Read the user's stored refresh token (bypass field-level access)
     const fullUser = await payload.findByID({
@@ -43,10 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Use the refresh token to get a new access token
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-    )
+    const oauth2Client = createOAuth2Client()
     oauth2Client.setCredentials({ refresh_token: refreshToken })
 
     const { credentials } = await oauth2Client.refreshAccessToken()
@@ -69,14 +54,7 @@ export async function POST(req: NextRequest) {
 
     // Set the refreshed access token cookie
     const response = NextResponse.json({ success: true })
-    response.cookies.set('ga4_access_token', credentials.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 3600,
-      path: '/',
-    })
-
+    setGA4Cookie(response, credentials.access_token)
     return response
   } catch (err) {
     console.error('Token refresh error:', err)

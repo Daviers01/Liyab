@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { generateAuditPDF } from '@/app/(app)/app/tools/ga4-audit/generateAuditPDF'
+import { FireLoader } from '@/app/(app)/components/FireLoader'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -93,8 +94,7 @@ function HealthScoreRing({ score }: { score: number }) {
   const radius = 54
   const circumference = 2 * Math.PI * radius
   const offset = circumference - (score / 100) * circumference
-  const color =
-    score >= 80 ? 'text-emerald-500' : score >= 50 ? 'text-amber-500' : 'text-red-500'
+  const color = score >= 80 ? 'text-emerald-500' : score >= 50 ? 'text-amber-500' : 'text-red-500'
   const bgColor =
     score >= 80
       ? 'stroke-emerald-500/15'
@@ -178,7 +178,9 @@ export default function AuditTool() {
               setProperties(tokenData.properties)
               setStatus('selecting')
             } else {
-              setError('No GA4 properties found. Make sure you have access to at least one GA4 property.')
+              setError(
+                'No GA4 properties found. Make sure you have access to at least one GA4 property.',
+              )
               setStatus('error')
             }
           }
@@ -200,7 +202,10 @@ export default function AuditTool() {
       const res = await fetch('/api/ga4-audit/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ propertyId: property.propertyId, propertyName: property.displayName }),
+        body: JSON.stringify({
+          propertyId: property.propertyId,
+          propertyName: property.displayName,
+        }),
       })
       const data = await res.json()
       if (data.report) {
@@ -265,9 +270,8 @@ export default function AuditTool() {
                 <span className="text-orange-600 dark:text-orange-400">Under 2 Minutes</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                8 out of 10 businesses have GA4 tracking gaps they don&apos;t know about.
-                Check your GA4 Health Score and get actionable fixes—no data stored, no
-                privacy risk.
+                8 out of 10 businesses have GA4 tracking gaps they don&apos;t know about. Check your
+                GA4 Health Score and get actionable fixes—no data stored, no privacy risk.
               </p>
               <div className="flex flex-wrap gap-4 justify-center pt-4">
                 <button
@@ -287,8 +291,16 @@ export default function AuditTool() {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground pt-2">
-                <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5 text-emerald-500">
-                  <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5 text-emerald-500"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Liyab Digital does not store, access, or retain your analytics data.
               </p>
@@ -316,7 +328,9 @@ export default function AuditTool() {
                       {cat.icon}
                     </div>
                     <h3 className="text-base font-bold text-foreground mb-1.5">{cat.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{cat.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {cat.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -330,9 +344,7 @@ export default function AuditTool() {
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">
                   How It Works
                 </p>
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                  3 Simple Steps
-                </h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground">3 Simple Steps</h2>
               </div>
               <div className="grid md:grid-cols-3 gap-8">
                 {steps.map((step, i) => (
@@ -343,7 +355,9 @@ export default function AuditTool() {
                       </span>
                     </div>
                     <h3 className="text-lg font-bold text-foreground">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -356,17 +370,24 @@ export default function AuditTool() {
               <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-8 md:p-12 space-y-8">
                 <div className="text-center space-y-4">
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto">
-                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6 text-emerald-500">
-                      <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-6 h-6 text-emerald-500"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold text-foreground">
                     Your Data Security Is Our Priority
                   </h2>
                   <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                    We never store or access your analytics data. Read-only permissions are
-                    used solely to analyze your configuration—nothing is saved, copied, or
-                    reused.
+                    We never store or access your analytics data. Read-only permissions are used
+                    solely to analyze your configuration—nothing is saved, copied, or reused.
                   </p>
                 </div>
                 <div className="grid sm:grid-cols-3 gap-6">
@@ -376,7 +397,9 @@ export default function AuditTool() {
                         {point.icon}
                       </div>
                       <h3 className="text-sm font-bold text-foreground">{point.title}</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{point.description}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {point.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -390,11 +413,7 @@ export default function AuditTool() {
       {status === 'connecting' && (
         <section className="py-32">
           <div className="container max-w-lg mx-auto text-center space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mx-auto animate-pulse">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8 text-orange-500">
-                <path fillRule="evenodd" d="M14.5 10a4.5 4.5 0 004.284-5.882c-.105-.324-.51-.391-.752-.15L15.34 6.66a.454.454 0 01-.493.11 3.01 3.01 0 01-1.618-1.616.455.455 0 01.11-.494l2.694-2.692c.24-.241.174-.647-.15-.752a4.5 4.5 0 00-5.873 4.575c.055.873-.128 1.808-.8 2.368l-7.23 6.024a2.724 2.724 0 103.837 3.837l6.024-7.23c.56-.672 1.495-.855 2.368-.8.096.007.193.01.291.01zM5 16a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
-              </svg>
-            </div>
+            <FireLoader size={80} label="" />
             <h2 className="text-2xl font-bold text-foreground">Connecting to Google...</h2>
             <p className="text-muted-foreground">
               Complete the sign-in in the popup window to continue.
@@ -420,9 +439,7 @@ export default function AuditTool() {
               <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                 Select a GA4 Property
               </h2>
-              <p className="text-muted-foreground">
-                Choose the property you&apos;d like to audit.
-              </p>
+              <p className="text-muted-foreground">Choose the property you&apos;d like to audit.</p>
             </div>
             <div className="space-y-3">
               {properties.map((prop) => (
@@ -438,8 +455,16 @@ export default function AuditTool() {
                       </p>
                       <p className="text-sm text-muted-foreground mt-0.5">{prop.propertyId}</p>
                     </div>
-                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-muted-foreground group-hover:text-orange-500 transition-colors">
-                      <path fillRule="evenodd" d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z" clipRule="evenodd" />
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-5 h-5 text-muted-foreground group-hover:text-orange-500 transition-colors"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                 </button>
@@ -461,18 +486,11 @@ export default function AuditTool() {
       {status === 'auditing' && (
         <section className="py-32">
           <div className="container max-w-lg mx-auto text-center space-y-6">
-            <div className="relative w-20 h-20 mx-auto">
-              <div className="absolute inset-0 rounded-2xl bg-orange-500/10 border border-orange-500/20 animate-pulse" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="w-8 h-8 text-orange-500 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.2" />
-                  <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-              </div>
-            </div>
+            <FireLoader size={80} label="" />
             <h2 className="text-2xl font-bold text-foreground">Auditing Your GA4 Setup...</h2>
             <p className="text-muted-foreground">
-              Analyzing <span className="font-medium text-foreground">{selectedProperty?.displayName}</span>.
+              Analyzing{' '}
+              <span className="font-medium text-foreground">{selectedProperty?.displayName}</span>.
               This usually takes under 30 seconds.
             </p>
             <div className="space-y-2 text-sm text-muted-foreground max-w-xs mx-auto">
@@ -488,7 +506,11 @@ export default function AuditTool() {
           <div className="container max-w-lg mx-auto text-center space-y-6">
             <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-8 h-8 text-red-500">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-foreground">Something Went Wrong</h2>
@@ -517,9 +539,7 @@ export default function AuditTool() {
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">
                 Audit Complete
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                GA4 Health Report
-              </h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">GA4 Health Report</h2>
               <p className="text-muted-foreground">
                 {report.propertyName} &middot; {report.propertyId}
               </p>
@@ -551,11 +571,15 @@ export default function AuditTool() {
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-sm">
                       <span className="w-2 h-2 rounded-full bg-amber-500" />
-                      <span className="text-muted-foreground">{report.summary.warnings} Warnings</span>
+                      <span className="text-muted-foreground">
+                        {report.summary.warnings} Warnings
+                      </span>
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-sm">
                       <span className="w-2 h-2 rounded-full bg-red-500" />
-                      <span className="text-muted-foreground">{report.summary.failures} Failures</span>
+                      <span className="text-muted-foreground">
+                        {report.summary.failures} Failures
+                      </span>
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-sm">
                       <span className="w-2 h-2 rounded-full bg-blue-500" />
@@ -584,7 +608,9 @@ export default function AuditTool() {
                     >
                       <div className="flex items-center gap-3">
                         <h3 className="text-lg font-bold text-foreground">{category}</h3>
-                        <span className="text-xs text-muted-foreground">{checks.length} checks</span>
+                        <span className="text-xs text-muted-foreground">
+                          {checks.length} checks
+                        </span>
                         {failCount > 0 && (
                           <span className="text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5">
                             {failCount} failed
@@ -640,8 +666,20 @@ export default function AuditTool() {
                 {exporting ? (
                   <>
                     <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.2" />
-                      <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeOpacity="0.2"
+                      />
+                      <path
+                        d="M12 2a10 10 0 019.95 9"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
                     </svg>
                     Generating PDF...
                   </>
@@ -688,7 +726,11 @@ const auditCategories = [
     description: 'Reviews if events, parameters, and user properties are properly configured.',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-orange-500">
-        <path fillRule="evenodd" d="M4.25 2A2.25 2.25 0 002 4.25v11.5A2.25 2.25 0 004.25 18h11.5A2.25 2.25 0 0018 15.75V4.25A2.25 2.25 0 0015.75 2H4.25zM15 5.75a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm-8.5 6a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5zM8.584 9a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75zm3.58-1.25a.75.75 0 00-1.5 0v6.5a.75.75 0 001.5 0v-6.5z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M4.25 2A2.25 2.25 0 002 4.25v11.5A2.25 2.25 0 004.25 18h11.5A2.25 2.25 0 0018 15.75V4.25A2.25 2.25 0 0015.75 2H4.25zM15 5.75a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm-8.5 6a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5zM8.584 9a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75zm3.58-1.25a.75.75 0 00-1.5 0v6.5a.75.75 0 001.5 0v-6.5z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -706,7 +748,11 @@ const auditCategories = [
     description: 'Identifies missing events, duplicate tracking, and broken configurations.',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-orange-500">
-        <path fillRule="evenodd" d="M10 2a6 6 0 00-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 00.515 1.076 32.91 32.91 0 003.256.508 3.5 3.5 0 006.972 0 32.903 32.903 0 003.256-.508.75.75 0 00.515-1.076A11.448 11.448 0 0116 8a6 6 0 00-6-6zM8.05 14.943a33.54 33.54 0 003.9 0 2 2 0 01-3.9 0z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M10 2a6 6 0 00-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 00.515 1.076 32.91 32.91 0 003.256.508 3.5 3.5 0 006.972 0 32.903 32.903 0 003.256-.508.75.75 0 00.515-1.076A11.448 11.448 0 0116 8a6 6 0 00-6-6zM8.05 14.943a33.54 33.54 0 003.9 0 2 2 0 01-3.9 0z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -715,7 +761,11 @@ const auditCategories = [
     description: 'Checks attribution settings and configurations for accurate reporting.',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-orange-500">
-        <path fillRule="evenodd" d="M14.5 10a4.5 4.5 0 004.284-5.882c-.105-.324-.51-.391-.752-.15L15.34 6.66a.454.454 0 01-.493.11 3.01 3.01 0 01-1.618-1.616.455.455 0 01.11-.494l2.694-2.692c.24-.241.174-.647-.15-.752a4.5 4.5 0 00-5.873 4.575c.055.873-.128 1.808-.8 2.368l-7.23 6.024a2.724 2.724 0 103.837 3.837l6.024-7.23c.56-.672 1.495-.855 2.368-.8.096.007.193.01.291.01zM5 16a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M14.5 10a4.5 4.5 0 004.284-5.882c-.105-.324-.51-.391-.752-.15L15.34 6.66a.454.454 0 01-.493.11 3.01 3.01 0 01-1.618-1.616.455.455 0 01.11-.494l2.694-2.692c.24-.241.174-.647-.15-.752a4.5 4.5 0 00-5.873 4.575c.055.873-.128 1.808-.8 2.368l-7.23 6.024a2.724 2.724 0 103.837 3.837l6.024-7.23c.56-.672 1.495-.855 2.368-.8.096.007.193.01.291.01zM5 16a1 1 0 11-2 0 1 1 0 012 0z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -728,7 +778,8 @@ const steps = [
   },
   {
     title: 'Generate Audit Report',
-    description: 'Our engine runs 18+ automated checks on your GA4 configuration in under 2 minutes.',
+    description:
+      'Our engine runs 18+ automated checks on your GA4 configuration in under 2 minutes.',
   },
   {
     title: 'View Action Items',
@@ -742,17 +793,26 @@ const securityPoints = [
     description: 'Your analytics data always stays private. We never store, sell, or share it.',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-emerald-500">
-        <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
   {
     title: 'Read-Only Access',
-    description: 'We never change your GA4 data or settings. Access is limited to view permissions.',
+    description:
+      'We never change your GA4 data or settings. Access is limited to view permissions.',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-emerald-500">
         <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-        <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -761,7 +821,11 @@ const securityPoints = [
     description: 'Best practices applied at all times to keep your data safe and fully compliant.',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-emerald-500">
-        <path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -776,27 +840,162 @@ const sampleReport: AuditReport = {
   timestamp: new Date().toISOString(),
   checks: [
     // Event & Data Setup
-    { id: 'ev-1', category: 'Event & Data Setup', name: 'Data Streams Configured', status: 'pass', message: 'At least one web data stream is active and receiving data.' },
-    { id: 'ev-2', category: 'Event & Data Setup', name: 'Enhanced Measurement', status: 'warn', message: 'Enhanced measurement is only partially enabled. Scroll tracking and outbound click tracking are disabled.', recommendation: 'Enable all enhanced measurement events in Admin → Data Streams → Enhanced Measurement.' },
-    { id: 'ev-3', category: 'Event & Data Setup', name: 'Custom Events Defined', status: 'pass', message: '12 custom events found, all with valid naming conventions.' },
-    { id: 'ev-4', category: 'Event & Data Setup', name: 'Event Parameter Limits', status: 'pass', message: 'Custom event parameters are within the 25-parameter limit per event.' },
-    { id: 'ev-5', category: 'Event & Data Setup', name: 'User Properties', status: 'warn', message: 'Only 2 of 25 available user property slots are in use. Consider tracking user segments or membership tiers.', recommendation: 'Define user properties for key audience segments in Admin → Custom Definitions → User Properties.' },
+    {
+      id: 'ev-1',
+      category: 'Event & Data Setup',
+      name: 'Data Streams Configured',
+      status: 'pass',
+      message: 'At least one web data stream is active and receiving data.',
+    },
+    {
+      id: 'ev-2',
+      category: 'Event & Data Setup',
+      name: 'Enhanced Measurement',
+      status: 'warn',
+      message:
+        'Enhanced measurement is only partially enabled. Scroll tracking and outbound click tracking are disabled.',
+      recommendation:
+        'Enable all enhanced measurement events in Admin → Data Streams → Enhanced Measurement.',
+    },
+    {
+      id: 'ev-3',
+      category: 'Event & Data Setup',
+      name: 'Custom Events Defined',
+      status: 'pass',
+      message: '12 custom events found, all with valid naming conventions.',
+    },
+    {
+      id: 'ev-4',
+      category: 'Event & Data Setup',
+      name: 'Event Parameter Limits',
+      status: 'pass',
+      message: 'Custom event parameters are within the 25-parameter limit per event.',
+    },
+    {
+      id: 'ev-5',
+      category: 'Event & Data Setup',
+      name: 'User Properties',
+      status: 'warn',
+      message:
+        'Only 2 of 25 available user property slots are in use. Consider tracking user segments or membership tiers.',
+      recommendation:
+        'Define user properties for key audience segments in Admin → Custom Definitions → User Properties.',
+    },
     // Conversion Tracking
-    { id: 'cv-1', category: 'Conversion Tracking', name: 'Conversion Events Marked', status: 'fail', message: 'No events are marked as conversions. Key business actions like purchases and sign-ups should be flagged.', recommendation: 'Go to Admin → Events and toggle the "Mark as conversion" switch for your key business events (e.g., purchase, sign_up, generate_lead).' },
-    { id: 'cv-2', category: 'Conversion Tracking', name: 'Purchase Event Schema', status: 'fail', message: 'The purchase event is missing required ecommerce parameters: transaction_id, value, and currency.', recommendation: 'Update your purchase event to include transaction_id, value, currency, and items array per the GA4 ecommerce spec.' },
-    { id: 'cv-3', category: 'Conversion Tracking', name: 'Conversion Counting', status: 'info', message: 'Conversion counting is set to "Once per session" for all events. Verify this aligns with your measurement goals.' },
+    {
+      id: 'cv-1',
+      category: 'Conversion Tracking',
+      name: 'Conversion Events Marked',
+      status: 'fail',
+      message:
+        'No events are marked as conversions. Key business actions like purchases and sign-ups should be flagged.',
+      recommendation:
+        'Go to Admin → Events and toggle the "Mark as conversion" switch for your key business events (e.g., purchase, sign_up, generate_lead).',
+    },
+    {
+      id: 'cv-2',
+      category: 'Conversion Tracking',
+      name: 'Purchase Event Schema',
+      status: 'fail',
+      message:
+        'The purchase event is missing required ecommerce parameters: transaction_id, value, and currency.',
+      recommendation:
+        'Update your purchase event to include transaction_id, value, currency, and items array per the GA4 ecommerce spec.',
+    },
+    {
+      id: 'cv-3',
+      category: 'Conversion Tracking',
+      name: 'Conversion Counting',
+      status: 'info',
+      message:
+        'Conversion counting is set to "Once per session" for all events. Verify this aligns with your measurement goals.',
+    },
     // Data Quality
-    { id: 'dq-1', category: 'Data Quality', name: 'Duplicate Events', status: 'warn', message: 'Potential duplicate page_view events detected—GTM and enhanced measurement may both be sending page views.', recommendation: 'Disable the page_view toggle in Enhanced Measurement if GTM handles page view tracking.' },
-    { id: 'dq-2', category: 'Data Quality', name: 'Internal Traffic Filtering', status: 'fail', message: 'No internal traffic filter is defined. Your own team\'s visits may be inflating metrics.', recommendation: 'Create a data filter in Admin → Data Settings → Data Filters to exclude internal IP addresses.' },
-    { id: 'dq-3', category: 'Data Quality', name: 'Cross-Domain Tracking', status: 'info', message: 'No cross-domain tracking configured. If you operate multiple domains in one funnel, this should be set up.' },
-    { id: 'dq-4', category: 'Data Quality', name: 'Data Retention', status: 'warn', message: 'Data retention is set to 2 months. This limits historical exploration reports.', recommendation: 'Increase data retention to 14 months in Admin → Data Settings → Data Retention.' },
+    {
+      id: 'dq-1',
+      category: 'Data Quality',
+      name: 'Duplicate Events',
+      status: 'warn',
+      message:
+        'Potential duplicate page_view events detected—GTM and enhanced measurement may both be sending page views.',
+      recommendation:
+        'Disable the page_view toggle in Enhanced Measurement if GTM handles page view tracking.',
+    },
+    {
+      id: 'dq-2',
+      category: 'Data Quality',
+      name: 'Internal Traffic Filtering',
+      status: 'fail',
+      message:
+        "No internal traffic filter is defined. Your own team's visits may be inflating metrics.",
+      recommendation:
+        'Create a data filter in Admin → Data Settings → Data Filters to exclude internal IP addresses.',
+    },
+    {
+      id: 'dq-3',
+      category: 'Data Quality',
+      name: 'Cross-Domain Tracking',
+      status: 'info',
+      message:
+        'No cross-domain tracking configured. If you operate multiple domains in one funnel, this should be set up.',
+    },
+    {
+      id: 'dq-4',
+      category: 'Data Quality',
+      name: 'Data Retention',
+      status: 'warn',
+      message: 'Data retention is set to 2 months. This limits historical exploration reports.',
+      recommendation:
+        'Increase data retention to 14 months in Admin → Data Settings → Data Retention.',
+    },
     // Attribution & Settings
-    { id: 'at-1', category: 'Attribution & Settings', name: 'Attribution Model', status: 'pass', message: 'Attribution model is set to data-driven attribution (recommended default).' },
-    { id: 'at-2', category: 'Attribution & Settings', name: 'Google Ads Linking', status: 'fail', message: 'Google Ads is not linked to this GA4 property. Conversion data cannot be shared for bidding optimization.', recommendation: 'Link your Google Ads account in Admin → Product Links → Google Ads Links.' },
-    { id: 'at-3', category: 'Attribution & Settings', name: 'Search Console Integration', status: 'warn', message: 'Google Search Console is not linked. Organic search query data is unavailable in GA4.', recommendation: 'Link Search Console in Admin → Product Links → Search Console Links.' },
-    { id: 'at-4', category: 'Attribution & Settings', name: 'Referral Exclusion List', status: 'pass', message: 'Payment gateway domains (stripe.com, paypal.com) are excluded from referral sources.' },
-    { id: 'at-5', category: 'Attribution & Settings', name: 'Reporting Time Zone', status: 'pass', message: 'Reporting time zone is set consistent with your primary business location.' },
-    { id: 'at-6', category: 'Attribution & Settings', name: 'Currency Setting', status: 'pass', message: 'Reporting currency is configured correctly.' },
+    {
+      id: 'at-1',
+      category: 'Attribution & Settings',
+      name: 'Attribution Model',
+      status: 'pass',
+      message: 'Attribution model is set to data-driven attribution (recommended default).',
+    },
+    {
+      id: 'at-2',
+      category: 'Attribution & Settings',
+      name: 'Google Ads Linking',
+      status: 'fail',
+      message:
+        'Google Ads is not linked to this GA4 property. Conversion data cannot be shared for bidding optimization.',
+      recommendation: 'Link your Google Ads account in Admin → Product Links → Google Ads Links.',
+    },
+    {
+      id: 'at-3',
+      category: 'Attribution & Settings',
+      name: 'Search Console Integration',
+      status: 'warn',
+      message:
+        'Google Search Console is not linked. Organic search query data is unavailable in GA4.',
+      recommendation: 'Link Search Console in Admin → Product Links → Search Console Links.',
+    },
+    {
+      id: 'at-4',
+      category: 'Attribution & Settings',
+      name: 'Referral Exclusion List',
+      status: 'pass',
+      message:
+        'Payment gateway domains (stripe.com, paypal.com) are excluded from referral sources.',
+    },
+    {
+      id: 'at-5',
+      category: 'Attribution & Settings',
+      name: 'Reporting Time Zone',
+      status: 'pass',
+      message: 'Reporting time zone is set consistent with your primary business location.',
+    },
+    {
+      id: 'at-6',
+      category: 'Attribution & Settings',
+      name: 'Currency Setting',
+      status: 'pass',
+      message: 'Reporting currency is configured correctly.',
+    },
   ],
   summary: {
     total: 18,
