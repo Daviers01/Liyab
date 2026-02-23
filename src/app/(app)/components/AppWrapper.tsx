@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { AppShell } from './AppShell'
 import { FireLoader } from './FireLoader'
 
@@ -423,12 +424,12 @@ function AuthScreen() {
 
         {/* Back link */}
         <div className="text-center">
-          <a
+          <Link
             href="/"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             &larr; Back to Liyab Digital
-          </a>
+          </Link>
         </div>
       </div>
     </div>
