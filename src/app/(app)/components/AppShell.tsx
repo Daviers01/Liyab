@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect, createContext, useContext } from 'react'
 
 // ─── Sidebar context ─────────────────────────────────────────────────────────
@@ -117,7 +117,6 @@ export function AppShell({ children, user }: { children: React.ReactNode; user: 
             collapsed={collapsed}
             setCollapsed={setCollapsed}
             setMobileOpen={setMobileOpen}
-            user={user}
           />
         </aside>
 
@@ -140,12 +139,10 @@ function SidebarContent({
   collapsed,
   setCollapsed,
   setMobileOpen,
-  user,
 }: {
   collapsed: boolean
   setCollapsed: (v: boolean) => void
   setMobileOpen: (v: boolean) => void
-  user: { email: string; name?: string }
 }) {
   const pathname = usePathname()
   const [expandedSections, setExpandedSections] = useState<string[]>(['Tools'])
@@ -379,7 +376,6 @@ function TopBar({
   user: { email: string; name?: string }
 }) {
   const pathname = usePathname()
-  const router = useRouter()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   // Build breadcrumbs from pathname
