@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import { generateAuditPDF } from '@/app/(app)/app/tools/ga4-audit/generateAuditPDF'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -134,6 +133,7 @@ export default function AuditTool() {
   const handleExportPDF = useCallback(async () => {
     setExporting(true)
     try {
+      const { generateAuditPDF } = await import('@/app/(app)/app/tools/ga4-audit/generateAuditPDF')
       await generateAuditPDF(report)
     } catch (err) {
       console.error('PDF export failed:', err)
