@@ -8,6 +8,9 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Keep googleapis out of the webpack bundle — it's 196MB and only used server-side.
+  // This prevents the dev server from re-compiling it on every request (major perf + OOM fix).
+  serverExternalPackages: ['googleapis', 'google-auth-library'],
   images: {
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {

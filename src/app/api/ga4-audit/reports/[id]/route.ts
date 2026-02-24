@@ -11,12 +11,17 @@ export async function GET(
     if ('error' in auth) return auth.error
     const { user, payload } = auth
 
-    const { id } = await params
+    const { id: rawId } = await params
+    const id = Number(rawId)
+    if (!id || isNaN(id)) {
+      return Response.json({ error: 'Invalid report ID' }, { status: 400 })
+    }
 
     const report = await payload.findByID({
       collection: 'audit-reports',
       id,
       depth: 0,
+      disableErrors: true,
     })
 
     if (!report) {
@@ -56,12 +61,18 @@ export async function DELETE(
     if ('error' in auth) return auth.error
     const { user, payload } = auth
 
-    const { id } = await params
+    const { id: rawId } = await params
+    const id = Number(rawId)
+    if (!id || isNaN(id)) {
+      return Response.json({ error: 'Invalid report ID' }, { status: 400 })
+    }
 
+    // Use disableErrors to get null instead of a thrown NotFound
     const report = await payload.findByID({
       collection: 'audit-reports',
       id,
       depth: 0,
+      disableErrors: true,
     })
 
     if (!report) {

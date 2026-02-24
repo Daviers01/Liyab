@@ -1,10 +1,12 @@
 import { google } from 'googleapis'
 import { NextRequest, NextResponse } from 'next/server'
 import { createOAuth2Client, clearGA4Cookies } from '@/lib/google-client'
-import type { AuditCheckResult } from '@/types/audit'
+import { runAllChecks, extractAccountInfo, extractDataStreams } from './checks'
+import { fetchAnalyticsSnapshot } from './analytics-data'
+import type { EnhancedMeasurementSettings } from '@/types/audit'
 
-// Re-export the canonical type under the local alias used throughout this file
-type AuditCheck = AuditCheckResult
+// Allow up to 60s for all the parallel GA4 API calls
+export const maxDuration = 60
 
 // ─── Route Handler ───────────────────────────────────────────────────────────
 
@@ -29,64 +31,113 @@ export async function POST(req: NextRequest) {
     oauth2Client.setCredentials({ access_token: accessToken })
 
     // ── Gather GA4 property data IN PARALLEL ────────────────────────────
-    // All 6 GA4 Admin API calls are independent — fire them simultaneously
-    // to cut total data-gathering time from ~3-4s down to ~500ms.
     const analyticsAdmin = google.analyticsadmin({
       version: 'v1beta',
       auth: oauth2Client,
     })
 
-    const [propertyResult, streamsResult, dimsResult, metricsResult, conversionsResult, adsResult] =
-      await Promise.allSettled([
-        analyticsAdmin.properties.get({ name: propertyId }),
-        analyticsAdmin.properties.dataStreams.list({ parent: propertyId }),
-        analyticsAdmin.properties.customDimensions.list({ parent: propertyId }),
-        analyticsAdmin.properties.customMetrics.list({ parent: propertyId }),
-        analyticsAdmin.properties.conversionEvents.list({ parent: propertyId }),
-        analyticsAdmin.properties.googleAdsLinks.list({ parent: propertyId }),
-      ])
+    // v1alpha needed for BigQuery + Firebase links (not in v1beta)
+    const analyticsAdminAlpha = google.analyticsadmin({
+      version: 'v1alpha',
+      auth: oauth2Client,
+    })
+
+    const [
+      propertyResult,
+      streamsResult,
+      dimsResult,
+      metricsResult,
+      conversionsResult,
+      adsResult,
+      bigQueryResult,
+      firebaseResult,
+      analyticsSnapshot,
+    ] = await Promise.all([
+      analyticsAdmin.properties.get({ name: propertyId }).catch((e: unknown) => {
+        console.error('Failed to fetch property:', e)
+        return null
+      }),
+      analyticsAdmin.properties.dataStreams.list({ parent: propertyId }).catch(() => null),
+      analyticsAdmin.properties.customDimensions.list({ parent: propertyId }).catch(() => null),
+      analyticsAdmin.properties.customMetrics.list({ parent: propertyId }).catch(() => null),
+      analyticsAdmin.properties.conversionEvents.list({ parent: propertyId }).catch(() => null),
+      analyticsAdmin.properties.googleAdsLinks.list({ parent: propertyId }).catch(() => null),
+      // v1alpha for BigQuery + Firebase links
+      analyticsAdminAlpha.properties.bigQueryLinks.list({ parent: propertyId }).catch(() => null),
+      analyticsAdmin.properties.firebaseLinks.list({ parent: propertyId }).catch(() => null),
+      // GA4 Data API — fetch last 30 days of analytics data
+      fetchAnalyticsSnapshot(oauth2Client, propertyId),
+    ])
 
     // Property fetch is required — abort if it failed
-    if (propertyResult.status === 'rejected') {
-      console.error('Failed to fetch property:', propertyResult.reason)
+    if (!propertyResult) {
       return NextResponse.json(
         { error: 'Could not access the selected GA4 property. Check permissions.' },
         { status: 403 },
       )
     }
 
-    // Extract results (graceful fallback to empty arrays for optional resources)
-    const property = propertyResult.value.data
-    const dataStreams: Array<Record<string, unknown>> =
-      streamsResult.status === 'fulfilled'
-        ? ((streamsResult.value.data.dataStreams as Array<Record<string, unknown>>) ?? [])
-        : []
-    const customDimensions: Array<Record<string, unknown>> =
-      dimsResult.status === 'fulfilled'
-        ? ((dimsResult.value.data.customDimensions as Array<Record<string, unknown>>) ?? [])
-        : []
-    const customMetrics: Array<Record<string, unknown>> =
-      metricsResult.status === 'fulfilled'
-        ? ((metricsResult.value.data.customMetrics as Array<Record<string, unknown>>) ?? [])
-        : []
-    const conversionEvents: Array<Record<string, unknown>> =
-      conversionsResult.status === 'fulfilled'
-        ? ((conversionsResult.value.data.conversionEvents as Array<Record<string, unknown>>) ?? [])
-        : []
-    const googleAdsLinks: Array<Record<string, unknown>> =
-      adsResult.status === 'fulfilled'
-        ? ((adsResult.value.data.googleAdsLinks as Array<Record<string, unknown>>) ?? [])
-        : []
+    type R = Record<string, unknown>
+    // Extract results (graceful fallback to empty arrays)
+    const property = propertyResult.data as R
+    const dataStreams = (streamsResult?.data?.dataStreams as R[]) ?? []
+    const customDimensions = (dimsResult?.data?.customDimensions as R[]) ?? []
+    const customMetrics = (metricsResult?.data?.customMetrics as R[]) ?? []
+    const conversionEvents = (conversionsResult?.data?.conversionEvents as R[]) ?? []
+    const googleAdsLinks = (adsResult?.data?.googleAdsLinks as R[]) ?? []
+    const bigQueryLinks = (bigQueryResult?.data?.bigqueryLinks as R[]) ?? []
+    const firebaseLinks = (firebaseResult?.data?.firebaseLinks as R[]) ?? []
 
-    // ── Run audit checks ────────────────────────────────────────────────
-    const checks: AuditCheck[] = []
+    // ── Fetch Enhanced Measurement settings for each web stream (v1alpha) ──
+    const webStreams = dataStreams.filter((s) => (s.type as string) === 'WEB_DATA_STREAM')
+    let enhancedMeasurement: EnhancedMeasurementSettings[] = []
+    if (webStreams.length > 0) {
+      const emResults = await Promise.all(
+        webStreams.map((s) =>
+          analyticsAdminAlpha.properties.dataStreams
+            .getEnhancedMeasurementSettings({
+              name: `${s.name as string}/enhancedMeasurementSettings`,
+            })
+            .catch(() => null),
+        ),
+      )
+      enhancedMeasurement = emResults
+        .map((result, i): EnhancedMeasurementSettings | null => {
+          if (!result?.data) return null
+          const d = result.data
+          return {
+            streamName: (webStreams[i].displayName as string) || 'Web Stream',
+            streamEnabled: d.streamEnabled ?? false,
+            scrollsEnabled: d.scrollsEnabled ?? false,
+            outboundClicksEnabled: d.outboundClicksEnabled ?? false,
+            siteSearchEnabled: d.siteSearchEnabled ?? false,
+            searchQueryParameter: d.searchQueryParameter ?? undefined,
+            videoEngagementEnabled: d.videoEngagementEnabled ?? false,
+            fileDownloadsEnabled: d.fileDownloadsEnabled ?? false,
+            pageChangesEnabled: d.pageChangesEnabled ?? false,
+            formInteractionsEnabled: d.formInteractionsEnabled ?? false,
+          }
+        })
+        .filter((em): em is EnhancedMeasurementSettings => em !== null)
+    }
 
-    runDataStreamChecks(checks, dataStreams)
-    runConversionChecks(checks, conversionEvents)
-    runCustomDefinitionChecks(checks, customDimensions, customMetrics)
-    runPropertySettingsChecks(checks, property as unknown as Record<string, unknown>)
-    runIntegrationChecks(checks, googleAdsLinks)
-    runDataQualityChecks(checks, dataStreams)
+    // ── Run all audit checks ────────────────────────────────────────────
+    const checks = runAllChecks(
+      property,
+      dataStreams,
+      customDimensions,
+      customMetrics,
+      conversionEvents,
+      googleAdsLinks,
+      analyticsSnapshot,
+      bigQueryLinks,
+      firebaseLinks,
+      enhancedMeasurement,
+    )
+
+    // ── Extract structured overview data ────────────────────────────────
+    const accountInfo = extractAccountInfo(property, propertyId, propertyName)
+    const dataStreamInfos = extractDataStreams(dataStreams)
 
     // ── Calculate health score ──────────────────────────────────────────
     const passed = checks.filter((c) => c.status === 'pass').length
@@ -105,6 +156,9 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
       checks,
       summary: { total, passed, warnings, failures, info },
+      accountInfo,
+      dataStreams: dataStreamInfos,
+      analyticsSnapshot: analyticsSnapshot ?? undefined,
     }
 
     // Clear GA4 auth cookies — these are single-use per-audit
@@ -119,320 +173,4 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     )
   }
-}
-
-// ─── Audit Check Functions ───────────────────────────────────────────────────
-
-function runDataStreamChecks(checks: AuditCheck[], dataStreams: Array<Record<string, unknown>>) {
-  // Check: At least one data stream exists
-  if (dataStreams.length === 0) {
-    checks.push({
-      id: 'ds-1',
-      category: 'Event & Data Setup',
-      name: 'Data Streams Configured',
-      status: 'fail',
-      message: 'No data streams found. Your property is not collecting any data.',
-      recommendation: 'Add a web or app data stream in Admin → Data Streams → Add Stream.',
-    })
-  } else {
-    checks.push({
-      id: 'ds-1',
-      category: 'Event & Data Setup',
-      name: 'Data Streams Configured',
-      status: 'pass',
-      message: `${dataStreams.length} data stream(s) found and configured.`,
-    })
-  }
-
-  // Check: Web data stream has measurement ID
-  const webStreams = dataStreams.filter((s) => (s.type as string) === 'WEB_DATA_STREAM')
-  if (webStreams.length > 0) {
-    const hasWebStreamData = webStreams.some(
-      (s) => s.webStreamData && (s.webStreamData as Record<string, unknown>).measurementId,
-    )
-    checks.push({
-      id: 'ds-2',
-      category: 'Event & Data Setup',
-      name: 'Web Stream Measurement ID',
-      status: hasWebStreamData ? 'pass' : 'warn',
-      message: hasWebStreamData
-        ? 'Web data stream has a valid measurement ID.'
-        : 'Web data stream exists but measurement ID could not be verified.',
-      recommendation: hasWebStreamData
-        ? undefined
-        : 'Verify your measurement ID (G-XXXXXXX) in Admin → Data Streams.',
-    })
-
-    // Check: Enhanced measurement
-    const enhancedMeasurement = webStreams.some((s) => {
-      const webData = s.webStreamData as Record<string, unknown> | undefined
-      // The API may include enhancedMeasurementSettings
-      return webData && webData.measurementId
-    })
-    checks.push({
-      id: 'ds-3',
-      category: 'Event & Data Setup',
-      name: 'Enhanced Measurement',
-      status: enhancedMeasurement ? 'info' : 'warn',
-      message: enhancedMeasurement
-        ? 'Enhanced measurement availability confirmed. Verify all toggles are enabled in the GA4 UI.'
-        : 'Could not verify enhanced measurement settings. Some automatic event tracking may be disabled.',
-      recommendation: enhancedMeasurement
-        ? undefined
-        : 'Review enhanced measurement toggles (scrolls, outbound clicks, site search, video, file downloads) in Admin → Data Streams → Enhanced Measurement.',
-    })
-  }
-
-  // Check: Multiple web streams (potential duplicate tracking)
-  if (webStreams.length > 1) {
-    checks.push({
-      id: 'ds-4',
-      category: 'Data Quality',
-      name: 'Multiple Web Streams',
-      status: 'warn',
-      message: `${webStreams.length} web data streams found. This can cause duplicate event tracking.`,
-      recommendation:
-        'Unless intentional (e.g., staging vs. production), consolidate to a single web stream.',
-    })
-  }
-}
-
-function runConversionChecks(
-  checks: AuditCheck[],
-  conversionEvents: Array<Record<string, unknown>>,
-) {
-  // Check: At least one conversion event
-  if (conversionEvents.length === 0) {
-    checks.push({
-      id: 'cv-1',
-      category: 'Conversion Tracking',
-      name: 'Conversion Events Defined',
-      status: 'fail',
-      message:
-        'No conversion events (key events) are defined. Business-critical actions are not being tracked as conversions.',
-      recommendation:
-        'Mark key events as conversions in Admin → Events → toggle "Mark as key event" for events like purchase, sign_up, generate_lead.',
-    })
-  } else {
-    checks.push({
-      id: 'cv-1',
-      category: 'Conversion Tracking',
-      name: 'Conversion Events Defined',
-      status: 'pass',
-      message: `${conversionEvents.length} conversion event(s) configured.`,
-    })
-  }
-
-  // Check: Common recommended conversions
-  const convNames = conversionEvents.map((c) => ((c.eventName as string) || '').toLowerCase())
-  const recommendedConversions = ['purchase', 'sign_up', 'generate_lead', 'begin_checkout']
-  const missingRecommended = recommendedConversions.filter((name) => !convNames.includes(name))
-
-  if (conversionEvents.length > 0 && missingRecommended.length > 0) {
-    checks.push({
-      id: 'cv-2',
-      category: 'Conversion Tracking',
-      name: 'Recommended Conversion Events',
-      status: missingRecommended.length >= 3 ? 'warn' : 'info',
-      message: `Common conversion events not configured: ${missingRecommended.join(', ')}. These may not apply to your business.`,
-      recommendation:
-        'Review if any of these standard events apply to your business model and mark them as conversions if appropriate.',
-    })
-  }
-
-  // Check: conversion event count
-  if (conversionEvents.length > 20) {
-    checks.push({
-      id: 'cv-3',
-      category: 'Conversion Tracking',
-      name: 'Conversion Event Limit',
-      status: 'warn',
-      message: `${conversionEvents.length} conversion events defined. GA4 has a limit of 30 per property.`,
-      recommendation:
-        'Review and consolidate conversion events. Remove any that are no longer relevant to avoid hitting the limit.',
-    })
-  }
-}
-
-function runCustomDefinitionChecks(
-  checks: AuditCheck[],
-  customDimensions: Array<Record<string, unknown>>,
-  customMetrics: Array<Record<string, unknown>>,
-) {
-  // Custom dimensions
-  const eventScopeDims = customDimensions.filter((d) => (d.scope as string) === 'EVENT')
-  const userScopeDims = customDimensions.filter((d) => (d.scope as string) === 'USER')
-
-  checks.push({
-    id: 'cd-1',
-    category: 'Event & Data Setup',
-    name: 'Custom Dimensions',
-    status: customDimensions.length > 0 ? 'pass' : 'info',
-    message:
-      customDimensions.length > 0
-        ? `${eventScopeDims.length} event-scoped and ${userScopeDims.length} user-scoped custom dimensions configured.`
-        : 'No custom dimensions defined. Consider adding dimensions for business-specific data like content categories or user types.',
-  })
-
-  // Check event-scoped dimension limit (50)
-  if (eventScopeDims.length > 40) {
-    checks.push({
-      id: 'cd-2',
-      category: 'Event & Data Setup',
-      name: 'Event Dimension Limit',
-      status: 'warn',
-      message: `${eventScopeDims.length}/50 event-scoped custom dimensions used. Approaching the limit.`,
-      recommendation: 'Audit existing custom dimensions and archive any that are no longer in use.',
-    })
-  }
-
-  // Custom metrics
-  checks.push({
-    id: 'cd-3',
-    category: 'Event & Data Setup',
-    name: 'Custom Metrics',
-    status: 'info',
-    message:
-      customMetrics.length > 0
-        ? `${customMetrics.length} custom metric(s) configured.`
-        : 'No custom metrics defined. This is fine unless you need to track numeric business-specific values.',
-  })
-}
-
-function runPropertySettingsChecks(checks: AuditCheck[], property: Record<string, unknown>) {
-  // Timezone
-  const timeZone = property.timeZone as string | undefined
-  checks.push({
-    id: 'ps-1',
-    category: 'Attribution & Settings',
-    name: 'Reporting Time Zone',
-    status: timeZone ? 'pass' : 'warn',
-    message: timeZone
-      ? `Time zone set to ${timeZone}.`
-      : 'Time zone could not be determined. Verify it matches your primary business location.',
-    recommendation: timeZone
-      ? undefined
-      : 'Set your reporting time zone in Admin → Property Settings.',
-  })
-
-  // Currency
-  const currencyCode = property.currencyCode as string | undefined
-  checks.push({
-    id: 'ps-2',
-    category: 'Attribution & Settings',
-    name: 'Reporting Currency',
-    status: currencyCode ? 'pass' : 'warn',
-    message: currencyCode
-      ? `Currency set to ${currencyCode}.`
-      : 'Currency setting could not be verified.',
-    recommendation: currencyCode
-      ? undefined
-      : 'Set your reporting currency in Admin → Property Settings.',
-  })
-
-  // Industry category
-  const industryCategory = property.industryCategory as string | undefined
-  checks.push({
-    id: 'ps-3',
-    category: 'Attribution & Settings',
-    name: 'Industry Category',
-    status: industryCategory ? 'pass' : 'info',
-    message: industryCategory
-      ? `Industry category set to ${industryCategory}.`
-      : 'No industry category set. This enables benchmarking data in GA4.',
-  })
-
-  // Data retention
-  const retentionSettings = property.dataRetentionSettings as Record<string, unknown> | undefined
-  if (retentionSettings) {
-    const retention = retentionSettings.eventDataRetention as string
-    const isShort = retention === 'TWO_MONTHS' || retention === 'RETENTION_PERIOD_2_MONTHS'
-    checks.push({
-      id: 'ps-4',
-      category: 'Data Quality',
-      name: 'Data Retention Period',
-      status: isShort ? 'warn' : 'pass',
-      message: isShort
-        ? 'Data retention is set to 2 months, limiting historical exploration reports.'
-        : `Data retention is set to ${retention?.replace(/_/g, ' ').toLowerCase() || 'an extended period'}.`,
-      recommendation: isShort
-        ? 'Set data retention to 14 months in Admin → Data Settings → Data Retention.'
-        : undefined,
-    })
-  } else {
-    checks.push({
-      id: 'ps-4',
-      category: 'Data Quality',
-      name: 'Data Retention Period',
-      status: 'info',
-      message: 'Data retention settings could not be retrieved. Verify the setting in the GA4 UI.',
-    })
-  }
-}
-
-function runIntegrationChecks(
-  checks: AuditCheck[],
-  googleAdsLinks: Array<Record<string, unknown>>,
-) {
-  // Google Ads linking
-  checks.push({
-    id: 'int-1',
-    category: 'Attribution & Settings',
-    name: 'Google Ads Linking',
-    status: googleAdsLinks.length > 0 ? 'pass' : 'warn',
-    message:
-      googleAdsLinks.length > 0
-        ? `${googleAdsLinks.length} Google Ads account(s) linked.`
-        : 'No Google Ads accounts linked. If you run paid campaigns, linking enables conversion import and audience sharing.',
-    recommendation:
-      googleAdsLinks.length > 0
-        ? undefined
-        : 'Link your Google Ads account in Admin → Product Links → Google Ads Links.',
-  })
-
-  // Note: Search Console and BigQuery links require the full v1alpha API
-  checks.push({
-    id: 'int-2',
-    category: 'Attribution & Settings',
-    name: 'Search Console Integration',
-    status: 'info',
-    message:
-      'Search Console link status could not be verified via the API. Check Admin → Product Links → Search Console Links.',
-  })
-}
-
-function runDataQualityChecks(checks: AuditCheck[], dataStreams: Array<Record<string, unknown>>) {
-  // Internal traffic filter check (we can't directly read filters via beta API,
-  // but we can flag the need)
-  checks.push({
-    id: 'dq-1',
-    category: 'Data Quality',
-    name: 'Internal Traffic Filter',
-    status: 'info',
-    message:
-      "Verify that an internal traffic filter is active in Admin → Data Settings → Data Filters to exclude your team's visits from reporting.",
-  })
-
-  // Cross-domain tracking
-  const webStreams = dataStreams.filter((s) => (s.type as string) === 'WEB_DATA_STREAM')
-  if (webStreams.length === 1) {
-    checks.push({
-      id: 'dq-2',
-      category: 'Data Quality',
-      name: 'Cross-Domain Tracking',
-      status: 'info',
-      message:
-        'Single web stream detected. If your user journey spans multiple domains, configure cross-domain tracking in Admin → Data Streams → Configure Tag Settings.',
-    })
-  }
-
-  // Unwanted referrals
-  checks.push({
-    id: 'dq-3',
-    category: 'Data Quality',
-    name: 'Referral Exclusions',
-    status: 'info',
-    message:
-      'Verify that payment gateways and third-party auth providers are excluded from referral sources in Admin → Data Streams → Configure Tag Settings → List Unwanted Referrals.',
-  })
 }

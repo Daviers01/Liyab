@@ -4,7 +4,14 @@ import { useState, useCallback, useEffect } from 'react'
 import type { AuditCheckResult, AuditReport, SavedReportSummary } from '@/types/audit'
 import type { AuditStatus, ConnectPhase, GA4Property } from './types'
 import { Stepper } from './components'
-import { ReadyView, ConnectingView, SelectPropertyView, AuditingView, ErrorView, ResultsView } from './views'
+import {
+  ReadyView,
+  ConnectingView,
+  SelectPropertyView,
+  AuditingView,
+  ErrorView,
+  ResultsView,
+} from './views'
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
@@ -23,7 +30,7 @@ export default function GA4AuditApp() {
   // ── Saved reports state ──────────────────────────────────────────────
   const [savedReports, setSavedReports] = useState<SavedReportSummary[]>([])
   const [savedReportsLoading, setSavedReportsLoading] = useState(true)
-  const [savedReportId, setSavedReportId] = useState<string | null>(null)
+  const [savedReportId, setSavedReportId] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
 
   const currentStep =
@@ -74,7 +81,7 @@ export default function GA4AuditApp() {
   )
 
   // ── Load a saved report ──────────────────────────────────────────────
-  const handleLoadReport = useCallback(async (id: string) => {
+  const handleLoadReport = useCallback(async (id: number) => {
     setStatus('auditing')
     setAuditPhase(4)
     setError('')
@@ -96,7 +103,7 @@ export default function GA4AuditApp() {
           displayName: data.report.propertyName,
           propertyId: data.report.propertyId,
         })
-        setSavedReportId(id)
+        setSavedReportId(Number(id))
         setStatus('done')
         const failedCategories = loaded.checks
           .filter((c) => c.status === 'fail')
@@ -114,15 +121,17 @@ export default function GA4AuditApp() {
 
   // ── Delete a saved report ────────────────────────────────────────────
   const handleDeleteReport = useCallback(
-    async (id: string) => {
+    async (id: number) => {
       try {
         const res = await fetch(`/api/ga4-audit/reports/${id}`, { method: 'DELETE' })
-        if (res.ok) {
-          setSavedReports((prev) => prev.filter((r) => r.id !== id))
-          if (savedReportId === id) setSavedReportId(null)
+        if (!res.ok) {
+          console.error('Delete failed:', res.status, await res.text())
+          return
         }
-      } catch {
-        // Silent fail
+        setSavedReports((prev) => prev.filter((r) => r.id !== id))
+        if (savedReportId === id) setSavedReportId(null)
+      } catch (err) {
+        console.error('Delete request failed:', err)
       }
     },
     [savedReportId],
@@ -340,7 +349,7 @@ export default function GA4AuditApp() {
             GA4 Audit Tool
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Automated GA4 configuration audit with 18+ checks
+            Comprehensive GA4 audit across 12 categories &amp; 60+ checks
           </p>
         </div>
         <div className="flex items-center gap-3">

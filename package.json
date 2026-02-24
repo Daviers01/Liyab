@@ -7,7 +7,7 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS='--no-deprecation --max-old-space-size=8192' next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
-    "dev": "cross-env NODE_OPTIONS='--no-deprecation --max-old-space-size=2048' next dev",
+    "dev": "cross-env NODE_OPTIONS='--no-deprecation --max-old-space-size=4096' next dev",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
@@ -54,6 +54,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hook-form": "7.71.1",
+    "recharts": "^3.7.0",
     "sharp": "0.34.2",
     "tailwind-merge": "^3.4.0"
   },

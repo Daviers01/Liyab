@@ -6,8 +6,8 @@ interface ReadyViewProps {
   onConnect: () => void
   savedReports: SavedReportSummary[]
   savedReportsLoading: boolean
-  onLoadReport: (id: string) => void
-  onDeleteReport: (id: string) => void
+  onLoadReport: (id: number) => void
+  onDeleteReport: (id: number) => void
 }
 
 export function ReadyView({
@@ -18,7 +18,7 @@ export function ReadyView({
   onDeleteReport,
 }: ReadyViewProps) {
   return (
-    <div className="px-6 md:px-8 py-8 max-w-7xl mx-auto space-y-6">
+    <div className="px-6 md:px-8 py-8 space-y-6">
       <div className="grid md:grid-cols-[1fr_1.5fr] gap-6 items-start">
         {/* Left: Getting Started */}
         <div className="space-y-4">
@@ -157,8 +157,8 @@ function PastAuditsPanel({
   savedReports: SavedReportSummary[]
   savedReportsLoading: boolean
   onConnect: () => void
-  onLoadReport: (id: string) => void
-  onDeleteReport: (id: string) => void
+  onLoadReport: (id: number) => void
+  onDeleteReport: (id: number) => void
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden flex flex-col">
@@ -238,8 +238,8 @@ function SavedReportRow({
   onDelete,
 }: {
   report: SavedReportSummary
-  onLoad: (id: string) => void
-  onDelete: (id: string) => void
+  onLoad: (id: number) => void
+  onDelete: (id: number) => void
 }) {
   const scoreColor =
     r.healthScore >= 80
