@@ -8,6 +8,7 @@ export function item(
   label: string,
   status: AuditCheckResult['status'],
   detail?: string,
+  meta?: Record<string, string>,
 ): AuditDetailItem {
-  return { label, status, detail }
+  return { label, status, detail, meta }
 }

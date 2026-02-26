@@ -8,6 +8,8 @@ export interface AuditDetailItem {
   label: string
   status: AuditCheckStatus
   detail?: string
+  /** Extra key→value pairs rendered as additional table columns (e.g. scope, displayName, type) */
+  meta?: Record<string, string>
 }
 
 export interface AuditCheckResult {

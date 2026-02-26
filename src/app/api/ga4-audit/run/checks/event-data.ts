@@ -27,17 +27,15 @@ export function runEventDataChecks(
 
   // Helper to build param list items
   const dimToItem = (d: R): AuditDetailItem =>
-    item(
-      (d.parameterName as string) || (d.displayName as string) || 'unnamed',
-      'pass',
-      `Display: ${(d.displayName as string) || '—'} · Scope: ${(d.scope as string) || '—'}`,
-    )
+    item((d.parameterName as string) || (d.displayName as string) || 'unnamed', 'pass', undefined, {
+      'Display Name': (d.displayName as string) || '—',
+      Scope: (d.scope as string) || '—',
+    })
   const metricToItem = (m: R): AuditDetailItem =>
-    item(
-      (m.parameterName as string) || (m.displayName as string) || 'unnamed',
-      'pass',
-      `Display: ${(m.displayName as string) || '—'} · Type: ${(m.measurementUnit as string) || '—'}`,
-    )
+    item((m.parameterName as string) || (m.displayName as string) || 'unnamed', 'pass', undefined, {
+      'Display Name': (m.displayName as string) || '—',
+      Unit: (m.measurementUnit as string) || '—',
+    })
 
   // CD-1: Custom Dimensions
   const dimConfigured: AuditDetailItem[] = []
