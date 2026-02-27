@@ -428,6 +428,11 @@ export interface User {
   avatarUrl?: string | null;
   googleAccessToken?: string | null;
   googleRefreshToken?: string | null;
+  paddleCustomerId?: string | null;
+  paddleSubscriptionId?: string | null;
+  subscriptionStatus?: ('free' | 'active' | 'trialing' | 'past_due' | 'canceled' | 'paused') | null;
+  subscriptionPlan?: ('free' | 'pro_monthly') | null;
+  subscriptionCurrentPeriodEnd?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -809,6 +814,33 @@ export interface AuditReport {
     | boolean
     | null;
   summary:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  analyticsSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  accountInfo?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  dataStreams?:
     | {
         [k: string]: unknown;
       }
@@ -1391,6 +1423,11 @@ export interface UsersSelect<T extends boolean = true> {
   avatarUrl?: T;
   googleAccessToken?: T;
   googleRefreshToken?: T;
+  paddleCustomerId?: T;
+  paddleSubscriptionId?: T;
+  subscriptionStatus?: T;
+  subscriptionPlan?: T;
+  subscriptionCurrentPeriodEnd?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1419,6 +1456,9 @@ export interface AuditReportsSelect<T extends boolean = true> {
   healthScore?: T;
   checks?: T;
   summary?: T;
+  analyticsSnapshot?: T;
+  accountInfo?: T;
+  dataStreams?: T;
   updatedAt?: T;
   createdAt?: T;
 }

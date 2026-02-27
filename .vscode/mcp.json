@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "paddle": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@paddle/paddle-mcp"],
+      "env": {
+        "PADDLE_API_KEY": "YOUR_PADDLE_SANDBOX_API_KEY",
+        "PADDLE_ENVIRONMENT": "sandbox",
+        "PADDLE_MCP_TOOLS": "non-destructive"
+      }
+    }
+  },
+  "inputs": []
+}

@@ -59,6 +59,18 @@ export const AuditReports: CollectionConfig = {
       type: 'json',
       required: true,
     },
+    {
+      name: 'analyticsSnapshot',
+      type: 'json',
+    },
+    {
+      name: 'accountInfo',
+      type: 'json',
+    },
+    {
+      name: 'dataStreams',
+      type: 'json',
+    },
   ],
   timestamps: true,
 }

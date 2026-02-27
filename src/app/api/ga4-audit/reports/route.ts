@@ -60,7 +60,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { report } = body
 
-    if (!report || !report.propertyName || !report.propertyId || !report.checks || !report.summary) {
+    if (
+      !report ||
+      !report.propertyName ||
+      !report.propertyId ||
+      !report.checks ||
+      !report.summary
+    ) {
       return Response.json({ error: 'Invalid report data' }, { status: 400 })
     }
 
@@ -73,6 +79,9 @@ export async function POST(req: NextRequest) {
         healthScore: report.healthScore ?? 0,
         checks: report.checks,
         summary: report.summary,
+        analyticsSnapshot: report.analyticsSnapshot ?? null,
+        accountInfo: report.accountInfo ?? null,
+        dataStreams: report.dataStreams ?? null,
       },
     })
 

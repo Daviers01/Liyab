@@ -8,6 +8,21 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        // Only apply Paddle frame allowlist to the app routes
+        source: '/app/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value:
+              "frame-src 'self' https://sandbox-buy.paddle.com https://buy.paddle.com; frame-ancestors 'self'",
+          },
+        ],
+      },
+    ]
+  },
   // Keep googleapis out of the webpack bundle — it's 196MB and only used server-side.
   // This prevents the dev server from re-compiling it on every request (major perf + OOM fix).
   serverExternalPackages: ['googleapis', 'google-auth-library'],

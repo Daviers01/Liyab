@@ -11,12 +11,19 @@ export async function GET(req: NextRequest) {
     if ('error' in auth) return auth.error
     const { user, payload } = auth
 
-    // Fetch full user doc (overrideAccess to read all fields we need)
-    const fullUser = await payload.findByID({
-      collection: 'users',
-      id: user.id,
-      overrideAccess: true,
-    })
+    // Fetch full user doc and audit count in parallel
+    const [fullUser, auditCountResult] = await Promise.all([
+      payload.findByID({
+        collection: 'users',
+        id: user.id,
+        overrideAccess: true,
+      }),
+      payload.count({
+        collection: 'audit-reports',
+        where: { user: { equals: user.id } },
+        overrideAccess: true,
+      }),
+    ])
 
     return NextResponse.json({
       id: fullUser.id,
@@ -28,6 +35,12 @@ export async function GET(req: NextRequest) {
       avatarUrl: fullUser.avatarUrl || null,
       deactivated: fullUser.deactivated || false,
       createdAt: fullUser.createdAt,
+      // Subscription
+      subscriptionStatus: fullUser.subscriptionStatus ?? 'free',
+      subscriptionPlan: fullUser.subscriptionPlan ?? 'free',
+      subscriptionCurrentPeriodEnd: fullUser.subscriptionCurrentPeriodEnd ?? null,
+      // Usage
+      auditCount: auditCountResult.totalDocs,
     })
   } catch {
     return NextResponse.json({ error: 'Failed to load profile' }, { status: 500 })
@@ -90,10 +103,7 @@ export async function PATCH(req: NextRequest) {
         // If user already has a password (credentials user), verify current password
         if (fullUser.authProvider === 'credentials') {
           if (!currentPassword) {
-            return NextResponse.json(
-              { error: 'Current password is required' },
-              { status: 400 },
-            )
+            return NextResponse.json({ error: 'Current password is required' }, { status: 400 })
           }
 
           // Attempt login with current credentials to verify
@@ -106,10 +116,7 @@ export async function PATCH(req: NextRequest) {
               },
             })
           } catch {
-            return NextResponse.json(
-              { error: 'Current password is incorrect' },
-              { status: 400 },
-            )
+            return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 })
           }
         }
 
@@ -119,7 +126,8 @@ export async function PATCH(req: NextRequest) {
           id: user.id,
           data: {
             password: newPassword,
-            authProvider: fullUser.authProvider === 'google' ? 'credentials' : fullUser.authProvider,
+            authProvider:
+              fullUser.authProvider === 'google' ? 'credentials' : fullUser.authProvider,
           },
           overrideAccess: true,
         })

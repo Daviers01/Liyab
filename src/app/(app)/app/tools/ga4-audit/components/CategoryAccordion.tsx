@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { AuditCheckResult, AnalyticsSnapshot } from '@/types/audit'
 import { StatusIcon } from './StatusIcon'
+import { DeviceDistributionChart, LandingPageChart, TrafficSourceChart } from './AnalyticsCharts'
 
 interface CategoryAccordionProps {
   category: string
@@ -15,6 +16,9 @@ interface CategoryAccordionProps {
   analyticsSnapshot?: AnalyticsSnapshot
 }
 
+// Check IDs that have dedicated chart visualizations
+const CHART_CHECK_IDS = new Set(['ad-1', 'ad-2', 'ts-3'])
+
 export function CategoryAccordion({
   category,
   checks,
@@ -23,6 +27,7 @@ export function CategoryAccordion({
   aiSuggestions = {},
   aiLoading,
   onAskAI,
+  analyticsSnapshot,
 }: CategoryAccordionProps) {
   const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({})
 
@@ -43,17 +48,17 @@ export function CategoryAccordion({
             <h3 className="text-sm font-bold text-foreground">{category}</h3>
             <span className="text-[11px] text-muted-foreground">{checks.length} checks</span>
             {failCount > 0 && (
-              <span className="text-[10px] font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full px-1.5 py-0.5">
+              <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 border border-border rounded-full px-1.5 py-0.5">
                 {failCount} failed
               </span>
             )}
             {warnCount > 0 && (
-              <span className="text-[10px] font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-0.5">
+              <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 border border-border rounded-full px-1.5 py-0.5">
                 {warnCount} warning{warnCount > 1 ? 's' : ''}
               </span>
             )}
             {failCount === 0 && warnCount === 0 && passCount === checks.length && (
-              <span className="text-[10px] font-medium text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-1.5 py-0.5">
+              <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 border border-border rounded-full px-1.5 py-0.5">
                 All passed
               </span>
             )}
@@ -111,12 +116,12 @@ export function CategoryAccordion({
             return (
               <div
                 key={check.id}
-                className={`p-4 md:px-5 space-y-3 ${
+                className={`p-4 md:px-5 space-y-3 border-l-2 ${
                   check.status === 'fail'
-                    ? 'bg-red-500/[0.02]'
+                    ? 'border-l-red-500/40'
                     : check.status === 'warn'
-                      ? 'bg-amber-500/[0.02]'
-                      : ''
+                      ? 'border-l-amber-500/40'
+                      : 'border-l-transparent'
                 }`}
               >
                 {/* ── Header row ── */}
@@ -132,7 +137,7 @@ export function CategoryAccordion({
                         {check.tip && (
                           <span
                             title={check.tip}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-semibold cursor-help"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted/40 border border-border text-muted-foreground text-[10px] font-medium cursor-help"
                           >
                             <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
                               <path
@@ -212,25 +217,26 @@ export function CategoryAccordion({
 
                 {/* ── Tip box ── */}
                 {check.tip && (
-                  <div className="ml-8 rounded-lg bg-blue-500/5 border border-blue-500/15 p-2.5">
-                    <p className="text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
-                      <span className="font-bold">💡 Tip:</span> {check.tip}
+                  <div className="ml-8 rounded-lg bg-muted/20 border border-border p-2.5">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      <span className="font-semibold text-foreground">💡 Tip:</span> {check.tip}
                     </p>
                   </div>
                 )}
 
                 {/* ── Recommendation ── */}
                 {check.recommendation && (
-                  <div className="ml-8 rounded-lg bg-orange-500/5 border border-orange-500/15 p-2.5">
-                    <p className="text-[11px] text-orange-700 dark:text-orange-300 leading-relaxed">
-                      <span className="font-bold">Recommended fix:</span> {check.recommendation}
+                  <div className="ml-8 rounded-lg bg-muted/20 border border-border p-2.5">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      <span className="font-semibold text-foreground">Fix:</span>{' '}
+                      {check.recommendation}
                     </p>
                   </div>
                 )}
 
                 {/* ── AI Suggestion ── */}
                 {aiSuggestion && (
-                  <div className="ml-8 rounded-lg bg-gradient-to-br from-orange-500/5 to-amber-500/5 border border-orange-500/20 p-3 space-y-1.5">
+                  <div className="ml-8 rounded-lg bg-muted/20 border border-border p-3 space-y-1.5">
                     <div className="flex items-center gap-1.5">
                       <svg
                         viewBox="0 0 20 20"
@@ -243,7 +249,7 @@ export function CategoryAccordion({
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                         AI Suggestion
                       </span>
                     </div>
@@ -253,8 +259,44 @@ export function CategoryAccordion({
                   </div>
                 )}
 
+                {/* ── Chart visualization for analytics-backed checks ── */}
+                {CHART_CHECK_IDS.has(check.id) && analyticsSnapshot && (
+                  <div className="ml-8">
+                    <button
+                      onClick={() => toggleDetails(check.id)}
+                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className={`w-3 h-3 transition-transform ${isDetailsExpanded ? 'rotate-90' : ''}`}
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {isDetailsExpanded ? 'Hide' : 'Show'} chart
+                    </button>
+                    {isDetailsExpanded && (
+                      <div className="mt-2">
+                        {check.id === 'ad-1' && analyticsSnapshot.deviceBreakdown.length > 0 && (
+                          <DeviceDistributionChart data={analyticsSnapshot.deviceBreakdown} />
+                        )}
+                        {check.id === 'ad-2' && analyticsSnapshot.topLandingPages.length > 0 && (
+                          <LandingPageChart data={analyticsSnapshot.topLandingPages} />
+                        )}
+                        {check.id === 'ts-3' && analyticsSnapshot.topSources.length > 0 && (
+                          <TrafficSourceChart data={analyticsSnapshot.topSources} />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* ── Details tables ── */}
-                {hasDetails && (
+                {hasDetails && !CHART_CHECK_IDS.has(check.id) && (
                   <div className="ml-8">
                     <button
                       onClick={() => toggleDetails(check.id)}
@@ -273,8 +315,8 @@ export function CategoryAccordion({
                       </svg>
                       {isDetailsExpanded ? 'Hide' : 'Show'} details
                       {hasIssues && (
-                        <span className="ml-1 px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 text-[10px] font-semibold">
-                          {check.issues!.length} item{check.issues!.length > 1 ? 's' : ''}
+                        <span className="ml-1 px-1.5 py-0.5 rounded-full bg-muted/40 text-muted-foreground text-[10px] font-medium">
+                          {check.issues!.length}
                         </span>
                       )}
                     </button>
@@ -325,17 +367,7 @@ export function CategoryAccordion({
                                             {it.label}
                                           </td>
                                           <td className="px-3 py-2">
-                                            <span
-                                              className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                                                it.status === 'fail'
-                                                  ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                                                  : it.status === 'warn'
-                                                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                                    : it.status === 'pass'
-                                                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                                      : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                                              }`}
-                                            >
+                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-muted/40 text-muted-foreground">
                                               {it.status}
                                             </span>
                                           </td>

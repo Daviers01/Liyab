@@ -96,6 +96,9 @@ export default function GA4AuditApp() {
           timestamp: data.report.createdAt,
           checks: data.report.checks,
           summary: data.report.summary,
+          analyticsSnapshot: data.report.analyticsSnapshot ?? undefined,
+          accountInfo: data.report.accountInfo ?? undefined,
+          dataStreams: data.report.dataStreams ?? undefined,
         }
         setReport(loaded)
         setSelectedProperty({

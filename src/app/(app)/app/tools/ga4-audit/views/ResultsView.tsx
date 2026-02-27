@@ -99,9 +99,23 @@ export function ResultsView({
                     ? 'Needs Attention'
                     : 'Critical Issues Found'}
               </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {report.propertyName} &middot; {report.propertyId.replace('properties/', '')}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                <p className="text-xs text-muted-foreground">
+                  {report.propertyName} &middot; {report.propertyId.replace('properties/', '')}
+                </p>
+                {report.accountInfo?.serviceLevel === 'GOOGLE_ANALYTICS_360' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold tracking-wide">
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <path
+                        fillRule="evenodd"
+                        d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.83-4.4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    GA4 360
+                  </span>
+                )}
+              </div>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {report.healthScore >= 80
@@ -190,15 +204,7 @@ export function ResultsView({
                     >
                       <td className="py-2 px-3 font-medium text-foreground">{ds.name}</td>
                       <td className="py-2 px-3">
-                        <span
-                          className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                            ds.type === 'WEB'
-                              ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                              : ds.type === 'IOS'
-                                ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400'
-                                : 'bg-green-500/10 text-green-600 dark:text-green-400'
-                          }`}
-                        >
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted/40 text-muted-foreground border border-border">
                           {ds.type}
                         </span>
                       </td>
@@ -225,34 +231,33 @@ export function ResultsView({
                 {
                   label: 'Users',
                   value: report.analyticsSnapshot.totalUsers.toLocaleString(),
-                  color: 'text-blue-600 dark:text-blue-400',
+                  warn: false,
                 },
                 {
                   label: 'Sessions',
                   value: report.analyticsSnapshot.totalSessions.toLocaleString(),
-                  color: 'text-emerald-600 dark:text-emerald-400',
+                  warn: false,
                 },
                 {
                   label: 'Pageviews',
                   value: report.analyticsSnapshot.totalPageviews.toLocaleString(),
-                  color: 'text-purple-600 dark:text-purple-400',
+                  warn: false,
                 },
                 {
                   label: 'Bounce Rate',
                   value: `${report.analyticsSnapshot.bounceRate.toFixed(1)}%`,
-                  color:
-                    report.analyticsSnapshot.bounceRate > 70
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-amber-600 dark:text-amber-400',
+                  warn: report.analyticsSnapshot.bounceRate > 70,
                 },
                 {
                   label: 'Avg Session',
                   value: `${Math.floor(report.analyticsSnapshot.avgSessionDuration / 60)}m ${report.analyticsSnapshot.avgSessionDuration % 60}s`,
-                  color: 'text-orange-600 dark:text-orange-400',
+                  warn: false,
                 },
               ].map((m) => (
                 <div key={m.label} className="bg-muted/30 rounded-lg p-2.5 text-center">
-                  <p className={`text-lg font-bold ${m.color}`}>{m.value}</p>
+                  <p className={`text-lg font-bold ${m.warn ? 'text-red-500' : 'text-foreground'}`}>
+                    {m.value}
+                  </p>
                   <p className="text-[10px] text-muted-foreground font-medium mt-0.5">{m.label}</p>
                 </div>
               ))}
@@ -361,54 +366,70 @@ export function ResultsView({
                   {/* Status counters */}
                   <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                     {passCount > 0 && (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="w-3 h-3 text-emerald-500"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        {passCount} passed
+                        {passCount}
                       </span>
                     )}
                     {warnCount > 0 && (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-amber-600 dark:text-amber-400">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="w-3 h-3 text-amber-500"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        {warnCount} warning{warnCount > 1 ? 's' : ''}
+                        {warnCount}
                       </span>
                     )}
                     {failCount > 0 && (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-red-600 dark:text-red-400">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="w-3 h-3 text-red-500"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        {failCount} failed
+                        {failCount}
                       </span>
                     )}
                     {infoCount > 0 && (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                      <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="w-3 h-3 text-blue-500"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
                             clipRule="evenodd"
                           />
                         </svg>
-                        {infoCount} info
+                        {infoCount}
                       </span>
                     )}
-                    <span className="text-[10px] text-muted-foreground">{total} total</span>
+                    <span className="text-[10px] text-muted-foreground/60">/ {total}</span>
                   </div>
                 </div>
               </div>
@@ -526,7 +547,14 @@ export function ResultsView({
           onClick={onReset}
           className="inline-flex items-center gap-2 px-5 py-2.5 border border-border hover:border-orange-500/40 text-foreground font-medium rounded-xl transition-colors cursor-pointer text-sm"
         >
-          Run Another Audit
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path
+              fillRule="evenodd"
+              d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Back to Audits
         </button>
         <Link
           href="/app"
