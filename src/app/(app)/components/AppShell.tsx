@@ -78,6 +78,15 @@ const navigation: NavItem[] = [
           </svg>
         ),
       },
+      {
+        label: 'GTM Audit',
+        href: '/app/tools/gtm-audit',
+        icon: (
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px]">
+            <path d="M2 4.25A2.25 2.25 0 014.25 2h11.5A2.25 2.25 0 0118 4.25v11.5A2.25 2.25 0 0115.75 18H4.25A2.25 2.25 0 012 15.75V4.25zm2.25-.75a.75.75 0 00-.75.75v.758l9.25 7.948 4.25-3.653v-5.053a.75.75 0 00-.75-.75H4.25z" />
+          </svg>
+        ),
+      },
     ],
   },
 ]

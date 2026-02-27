@@ -10,6 +10,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { AuditReports } from './collections/AuditReports'
+import { GtmAuditReports } from './collections/GtmAuditReports'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -63,7 +64,7 @@ export default buildConfig({
       connectionString: process.env.POSTGRES_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, AuditReports],
+  collections: [Pages, Posts, Media, Categories, Users, AuditReports, GtmAuditReports],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,

@@ -7,5 +7,5 @@ interface ConnectingViewProps {
 }
 
 export function ConnectingView({ connectPhase, onCancel }: ConnectingViewProps) {
-  return <SharedConnectingView service="ga4" connectPhase={connectPhase} onCancel={onCancel} />
+  return <SharedConnectingView service="gtm" connectPhase={connectPhase} onCancel={onCancel} />
 }

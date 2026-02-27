@@ -73,6 +73,7 @@ export interface Config {
     categories: Category;
     users: User;
     'audit-reports': AuditReport;
+    'gtm-audit-reports': GtmAuditReport;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -96,6 +97,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'audit-reports': AuditReportsSelect<false> | AuditReportsSelect<true>;
+    'gtm-audit-reports': GtmAuditReportsSelect<false> | GtmAuditReportsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -854,6 +856,59 @@ export interface AuditReport {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gtm-audit-reports".
+ */
+export interface GtmAuditReport {
+  id: number;
+  user: number | User;
+  containerName: string;
+  containerId: string;
+  publicId: string;
+  healthScore: number;
+  checks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  summary:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  martech?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  containerType?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  tagCount?: number | null;
+  triggerCount?: number | null;
+  variableCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1065,6 +1120,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'audit-reports';
         value: number | AuditReport;
+      } | null)
+    | ({
+        relationTo: 'gtm-audit-reports';
+        value: number | GtmAuditReport;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1459,6 +1518,26 @@ export interface AuditReportsSelect<T extends boolean = true> {
   analyticsSnapshot?: T;
   accountInfo?: T;
   dataStreams?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gtm-audit-reports_select".
+ */
+export interface GtmAuditReportsSelect<T extends boolean = true> {
+  user?: T;
+  containerName?: T;
+  containerId?: T;
+  publicId?: T;
+  healthScore?: T;
+  checks?: T;
+  summary?: T;
+  martech?: T;
+  containerType?: T;
+  tagCount?: T;
+  triggerCount?: T;
+  variableCount?: T;
   updatedAt?: T;
   createdAt?: T;
 }

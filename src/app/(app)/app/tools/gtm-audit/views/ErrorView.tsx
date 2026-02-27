@@ -6,5 +6,5 @@ interface ErrorViewProps {
 }
 
 export function ErrorView({ error, onReset }: ErrorViewProps) {
-  return <SharedErrorView service="ga4" error={error} onReset={onReset} />
+  return <SharedErrorView service="gtm" error={error} onReset={onReset} />
 }

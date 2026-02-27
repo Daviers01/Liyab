@@ -31,6 +31,22 @@ const tools: Tool[] = [
     checks: '18+ checks',
     time: '< 2 min',
   },
+  {
+    slug: 'gtm-audit',
+    name: 'GTM Audit',
+    description:
+      '50+ automated checks across tags, triggers, variables, consent mode, naming conventions, ecommerce tracking, security risks, and your full MarTech stack.',
+    category: 'Tag Management',
+    status: 'free',
+    href: '/app/tools/gtm-audit',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
+        <path d="M2 4.25A2.25 2.25 0 014.25 2h11.5A2.25 2.25 0 0118 4.25v11.5A2.25 2.25 0 0115.75 18H4.25A2.25 2.25 0 012 15.75V4.25zm2.25-.75a.75.75 0 00-.75.75v.758l9.25 7.948 4.25-3.653v-5.053a.75.75 0 00-.75-.75H4.25z" />
+      </svg>
+    ),
+    checks: '50+ checks',
+    time: '< 1 min',
+  },
 ]
 
 // ─── Page ────────────────────────────────────────────────────────────────────

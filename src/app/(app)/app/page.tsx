@@ -29,6 +29,21 @@ const tools: Tool[] = [
     ),
     highlights: ['18+ automated checks', 'Health score', 'Actionable fixes'],
   },
+  {
+    slug: 'gtm-audit',
+    name: 'GTM Audit',
+    description:
+      '50+ automated checks across tags, triggers, variables, consent mode, ecommerce tracking, security risks, and your full MarTech stack.',
+    category: 'Tag Management',
+    status: 'free',
+    href: '/app/tools/gtm-audit',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
+        <path d="M2 4.25A2.25 2.25 0 014.25 2h11.5A2.25 2.25 0 0118 4.25v11.5A2.25 2.25 0 0115.75 18H4.25A2.25 2.25 0 012 15.75V4.25zm2.25-.75a.75.75 0 00-.75.75v.758l9.25 7.948 4.25-3.653v-5.053a.75.75 0 00-.75-.75H4.25z" />
+      </svg>
+    ),
+    highlights: ['50+ checks', 'Consent Mode v2', 'MarTech Stack', 'Security'],
+  },
 ]
 
 // ─── Stat cards ──────────────────────────────────────────────────────────────
@@ -36,19 +51,27 @@ const tools: Tool[] = [
 const stats = [
   {
     label: 'Available Tools',
-    value: '1',
+    value: '2',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-orange-500">
-        <path fillRule="evenodd" d="M14.5 10a4.5 4.5 0 004.284-5.882c-.105-.324-.51-.391-.752-.15L15.34 6.66a.454.454 0 01-.493.11 3.01 3.01 0 01-1.618-1.616.455.455 0 01.11-.494l2.694-2.692c.24-.241.174-.647-.15-.752a4.5 4.5 0 00-5.873 4.575c.055.873-.128 1.808-.8 2.368l-7.23 6.024a2.724 2.724 0 103.837 3.837l6.024-7.23c.56-.672 1.495-.855 2.368-.8.096.007.193.01.291.01zM5 16a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M14.5 10a4.5 4.5 0 004.284-5.882c-.105-.324-.51-.391-.752-.15L15.34 6.66a.454.454 0 01-.493.11 3.01 3.01 0 01-1.618-1.616.455.455 0 01.11-.494l2.694-2.692c.24-.241.174-.647-.15-.752a4.5 4.5 0 00-5.873 4.575c.055.873-.128 1.808-.8 2.368l-7.23 6.024a2.724 2.724 0 103.837 3.837l6.024-7.23c.56-.672 1.495-.855 2.368-.8.096.007.193.01.291.01zM5 16a1 1 0 11-2 0 1 1 0 012 0z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
   {
     label: 'Free Tools',
-    value: '1',
+    value: '2',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-emerald-500">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -67,7 +90,11 @@ const stats = [
     value: '0',
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-amber-500">
-        <path fillRule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
   },
@@ -106,9 +133,7 @@ export default function AppDashboard() {
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400 mb-1.5">
             Dashboard
           </p>
-          <h1 className="text-xl md:text-2xl font-bold text-foreground">
-            Welcome to Liyab Tools
-          </h1>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Welcome to Liyab Tools</h1>
           <p className="text-sm text-muted-foreground mt-1.5 max-w-xl leading-relaxed">
             Free analytics and marketing tools built for data-driven teams.
           </p>
